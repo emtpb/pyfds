@@ -3,7 +3,7 @@ import numpy as np
 
 class Region:
     """Storage for the indices of points and metadata for which specific behaviour is to be
-    applied (boundaries, materials, output, etc.)"""
+    applied (boundaries, materials, output, etc.)."""
 
     def __init__(self, indices, name=''):
 
@@ -14,7 +14,7 @@ class Region:
 
 
 class PointRegion(Region):
-    """Region specified by individual points"""
+    """Region specified by individual points."""
 
     def __init__(self, indices, coordinates, name=''):
 
@@ -23,7 +23,7 @@ class PointRegion(Region):
 
 
 class LineRegion(Region):
-    """Region specified by a line of points"""
+    """Region specified by a line of points."""
 
     def __init__(self, indices, coordinates, name=''):
 
@@ -32,7 +32,7 @@ class LineRegion(Region):
 
 
 class RectRegion(Region):
-    """Region specified by a rectangular field of points"""
+    """Region specified by a rectangular field of points."""
 
     def __init__(self, indices, coordinates, name=''):
 
@@ -42,7 +42,7 @@ class RectRegion(Region):
 
 class Boundary:
     """Specifies values that are to be written to a FieldComponent after each simulation step
-    (like excitation signals and fixed boundaries)"""
+    (like excitation signals and fixed boundaries)."""
 
     def __init__(self, region, value=0, additive=False):
 
@@ -52,7 +52,7 @@ class Boundary:
 
 
 class Output:
-    """Specifies values to be extracted from the FieldComponent after each simulation step"""
+    """Specifies values to be extracted from the FieldComponent after each simulation step."""
 
     def __init__(self, region):
 
@@ -65,7 +65,7 @@ class Output:
 
 
 class MaterialRegion:
-    """Specifies material(s) for a given region"""
+    """Specifies material(s) for a given region."""
 
     def __init__(self, region, material):
 
