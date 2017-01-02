@@ -33,3 +33,4 @@ def test_field_component_output():
     fc.write_outputs()
     fc.write_outputs()
     assert np.allclose(fc.outputs[0].signals, [[0, 0], [0, 0], [0, 0]])
+    assert np.allclose(fc.outputs[0].mean_signal, np.zeros(2))
