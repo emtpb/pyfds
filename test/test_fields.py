@@ -34,3 +34,10 @@ def test_field_component_output():
     fc.write_outputs()
     assert np.allclose(fc.outputs[0].signals, [[0, 0], [0, 0], [0, 0]])
     assert np.allclose(fc.outputs[0].mean_signal, np.zeros(2))
+
+
+def test_field1d_init():
+    # create a field where the main material is 5
+    fld = fds.Field1D(100, 0.1, 100, 0.1, int(5))
+    # check if the "material parameter" 'real' for the complete field is 5
+    assert np.allclose(fld.material_vector('real'), 5)
