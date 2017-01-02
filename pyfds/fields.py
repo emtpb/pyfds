@@ -1,4 +1,38 @@
 import numpy as np
+from . import regions as reg
+
+
+class Field:
+    """Base class for all fields."""
+
+    def material_vector(self, mat_parameter):
+        """Get a vector that contains the specified material parameter for every point of the
+        field."""
+
+        mat_vector = np.zeros(self.num_points)
+
+        for mat_reg in self.material_regions:
+            for mat in mat_reg.materials:
+                if hasattr(mat, mat_parameter):
+                    mat_vector[mat_reg.region.indices] = getattr(mat, mat_parameter)
+
+        return mat_vector
+
+
+class Field1D(Field):
+    """Class for one dimensional fields."""
+
+    def __init__(self, x_samples, x_delta, t_samples, t_delta, material):
+        self.x = Dimension(x_samples, x_delta)
+        self.t = Dimension(t_samples, t_delta)
+
+        # add main material
+        self.material_regions = [reg.MaterialRegion(reg.LineRegion(
+            np.arange(self.x.samples, dtype='int_'), [0, max(self.x.vector)], 'main'), material)]
+
+    @property
+    def num_points(self):
+        return self.x.samples
 
 
 class Dimension:
