@@ -25,6 +25,7 @@ setup(
 
     # Runtime dependencies
     install_requires=[
+        'numpy'
     ],
 
     # Setup/build dependencies; setuptools_scm required for git-based versioning
