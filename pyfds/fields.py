@@ -48,6 +48,13 @@ class Field1D(Field):
                                   self.x.increment, [-1, 0]),
                                  shape=(self.num_points, self.num_points))
 
+    def d_x2(self):
+        """Creates a sparse matrix for computing the second derivative with respect to x."""
+
+        return sp.dia_matrix((np.array([[1], [-2], [1]]).repeat(self.num_points, axis=1) /
+                              self.x.increment**2, [-1, 0, 1]),
+                             shape=(self.num_points, self.num_points))
+
 
 class Dimension:
     """Represents a space or time axis."""
