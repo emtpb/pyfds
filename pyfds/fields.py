@@ -1,4 +1,5 @@
 import numpy as np
+import scipy.sparse as sp
 from . import regions as reg
 
 
@@ -33,6 +34,19 @@ class Field1D(Field):
     @property
     def num_points(self):
         return self.x.samples
+
+    def d_x(self, backward=False):
+        """Creates a sparse matrix for computing the first derivative with respect to x.
+        Uses forward difference quotient by default, specify backward=True if required otherwise"""
+
+        if not backward:
+            return sp.dia_matrix((np.array([[-1], [1]]).repeat(self.num_points, axis=1) /
+                                  self.x.increment, [0, 1]),
+                                 shape=(self.num_points, self.num_points))
+        else:
+            return sp.dia_matrix((np.array([[-1], [1]]).repeat(self.num_points, axis=1) /
+                                  self.x.increment, [-1, 0]),
+                                 shape=(self.num_points, self.num_points))
 
 
 class Dimension:
