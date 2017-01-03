@@ -1,3 +1,45 @@
+from . import fields as fld
+
+
+class Acoustic1D(fld.Field1D):
+    """Class for simulation of one dimensional acoustic fields."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.pressure = fld.FieldComponent(self.num_points)
+        self.velocity = fld.FieldComponent(self.num_points)
+
+        # initialize attributes sparse matrices
+        self.a_pv = None
+        self.a_vp = None
+        self.a_vv = None
+
+    def simulate(self):
+        """Starts the simulation."""
+
+        self.a_pv = self.d_x(factors=(self.t.increment / self.x.increment *
+                                      self.material_vector('sound_velocity') ** 2 *
+                                      self.material_vector('density')))
+        self.a_vp = self.d_x(factors=(self.t.increment / self.x.increment /
+                                      self.material_vector('density')), backward=True)
+        self.a_vv = self.d_x2(factors=(self.t.increment / self.x.increment ** 2 *
+                                       self.material_vector('absorption_coef') /
+                                       self.material_vector('density')))
+
+        for ii in range(self.t.samples):
+
+            self.pressure.apply_bounds(ii)
+            self.pressure.write_outputs()
+
+            self.velocity.values -= (self.a_vp.dot(self.pressure.values) -
+                                     self.a_vv.dot(self.velocity.values))
+
+            self.velocity.apply_bounds(ii)
+            self.velocity.write_outputs()
+
+            self.pressure.values -= self.a_pv.dot(self.velocity.values)
+
+
 class AcousticMaterial:
     """Class for specification of acoustic material parameters."""
 
