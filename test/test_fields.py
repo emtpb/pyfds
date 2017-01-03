@@ -47,3 +47,8 @@ def test_field1d_d_x():
     fld = fds.Field1D(3, 1, 3, 1, int(5))
     assert np.allclose(fld.d_x().toarray(), [[-1, 1, 0], [0, -1, 1], [0, 0, -1]])
     assert np.allclose(fld.d_x(backward=True).toarray(), [[1, 0, 0], [-1, 1, 0], [0, -1, 1]])
+
+
+def test_field1d_d_x2():
+    fld = fds.Field1D(3, 1, 3, 1, 5)
+    assert np.allclose(fld.d_x2().toarray(), [[-2, 1, 0], [1, -2, 1], [0, 1, -2]])
