@@ -35,24 +35,31 @@ class Field1D(Field):
     def num_points(self):
         return self.x.samples
 
-    def d_x(self, backward=False):
-        """Creates a sparse matrix for computing the first derivative with respect to x.
-        Uses forward difference quotient by default, specify backward=True if required otherwise"""
+    def d_x(self, factors=None, backward=False):
+        """Creates a sparse matrix for computing the first derivative with respect to x multiplied
+        by factors given for every point. Uses forward difference quotient by default, specify
+        backward=True if required otherwise"""
+
+        # use ones as factors if none are specified
+        if factors is None:
+            factors = np.array(1).repeat(self.num_points)
 
         if not backward:
-            return sp.dia_matrix((np.array([[-1], [1]]).repeat(self.num_points, axis=1) /
-                                  self.x.increment, [0, 1]),
+            return sp.dia_matrix((np.array([-factors, factors]), [0, 1]),
                                  shape=(self.num_points, self.num_points))
         else:
-            return sp.dia_matrix((np.array([[-1], [1]]).repeat(self.num_points, axis=1) /
-                                  self.x.increment, [-1, 0]),
+            return sp.dia_matrix((np.array([-factors, factors]), [-1, 0]),
                                  shape=(self.num_points, self.num_points))
 
-    def d_x2(self):
-        """Creates a sparse matrix for computing the second derivative with respect to x."""
+    def d_x2(self, factors=None):
+        """Creates a sparse matrix for computing the second derivative with respect to x multiplied
+        by factors given for every point."""
 
-        return sp.dia_matrix((np.array([[1], [-2], [1]]).repeat(self.num_points, axis=1) /
-                              self.x.increment**2, [-1, 0, 1]),
+        # use ones as factors if none are specified
+        if factors is None:
+            factors = np.array(1).repeat(self.num_points)
+
+        return sp.dia_matrix((np.array([factors, -2*factors, factors]), [-1, 0, 1]),
                              shape=(self.num_points, self.num_points))
 
 
