@@ -10,34 +10,34 @@ class Acoustic1D(fld.Field1D):
         self.velocity = fld.FieldComponent(self.num_points)
 
         # initialize attributes sparse matrices
-        self.a_pv = None
-        self.a_vp = None
-        self.a_vv = None
+        self.a_p_v = None
+        self.a_v_p = None
+        self.a_v_v = None
 
     def simulate(self):
         """Starts the simulation."""
 
-        self.a_pv = self.d_x(factors=(self.t.increment / self.x.increment *
-                                      self.material_vector('sound_velocity') ** 2 *
-                                      self.material_vector('density')))
-        self.a_vp = self.d_x(factors=(self.t.increment / self.x.increment /
-                                      self.material_vector('density')), backward=True)
-        self.a_vv = self.d_x2(factors=(self.t.increment / self.x.increment ** 2 *
-                                       self.material_vector('absorption_coef') /
+        self.a_p_v = self.d_x(factors=(self.t.increment / self.x.increment *
+                                       self.material_vector('sound_velocity') ** 2 *
                                        self.material_vector('density')))
+        self.a_v_p = self.d_x(factors=(self.t.increment / self.x.increment /
+                                       self.material_vector('density')), backward=True)
+        self.a_v_v = self.d_x2(factors=(self.t.increment / self.x.increment ** 2 *
+                                        self.material_vector('absorption_coef') /
+                                        self.material_vector('density')))
 
         for ii in range(self.t.samples):
 
             self.pressure.apply_bounds(ii)
             self.pressure.write_outputs()
 
-            self.velocity.values -= (self.a_vp.dot(self.pressure.values) -
-                                     self.a_vv.dot(self.velocity.values))
+            self.velocity.values -= (self.a_v_p.dot(self.pressure.values) -
+                                     self.a_v_v.dot(self.velocity.values))
 
             self.velocity.apply_bounds(ii)
             self.velocity.write_outputs()
 
-            self.pressure.values -= self.a_pv.dot(self.velocity.values)
+            self.pressure.values -= self.a_p_v.dot(self.velocity.values)
 
 
 class Acoustic2D(fld.Field2D):
