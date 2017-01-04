@@ -77,6 +77,13 @@ class Field1D(Field):
 
         return self.x.vector[index]
 
+    def get_line_region(self, position, name=''):
+        """Creates a line region at the given position (start, end), inclusive."""
+
+        return reg.LineRegion([index for index in range(self.get_index(position[0]),
+                                                        self.get_index(position[1]) + 1)],
+                              position, name=name)
+
 
 class Field2D(Field):
     """Class for two dimensional fields."""

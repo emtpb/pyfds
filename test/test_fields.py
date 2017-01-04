@@ -103,3 +103,9 @@ def test_field1d_get_position():
 def test_field2d_get_position():
     fld = fds.Field2D(4, 0.1, 3, 0.1, 1, 1, int(5))
     assert np.allclose(fld.get_position(fld.get_index((0.2, 0.1))), (0.2, 0.1))
+
+
+def test_field1d_get_line_region():
+    fld = fds.Field1D(4, 0.1, 1, 1, int(5))
+    fld.material_regions.append(fds.MaterialRegion(fld.get_line_region((0.1, 0.2)), int(23)))
+    assert np.allclose(fld.material_vector('real'), [5, 23, 23, 5])
