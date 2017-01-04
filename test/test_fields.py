@@ -88,3 +88,8 @@ def test_field2d_d_y2():
     fld = fds.Field2D(2, 1, 2, 1, 10, 1, int(5))
     assert np.allclose(fld.d_y2().toarray(), [[-2, 0, 1, 0], [0, -2, 0, 1],
                                               [1, 0, -2, 0], [0, 1, 0, -2]])
+
+
+def test_field2d_get_index():
+    fld = fds.Field2D(4, 0.1, 3, 0.1, 1, 1, int(5))
+    assert fld.get_index((0.2, 0.1)) == 6

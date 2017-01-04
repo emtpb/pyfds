@@ -62,6 +62,11 @@ class Field1D(Field):
         return sp.dia_matrix((np.array([factors, -2*factors, factors]), [-1, 0, 1]),
                              shape=(self.num_points, self.num_points))
 
+    def get_index(self, position):
+        """Returns the index of the point a the given position."""
+
+        return self.x.get_index(position)
+
 
 class Field2D(Field):
     """Class for two dimensional fields."""
@@ -134,6 +139,11 @@ class Field2D(Field):
         return sp.dia_matrix((np.array([factors, -2*factors, factors]),
                               [-self.x.samples, 0, self.x.samples]),
                              shape=(self.num_points, self.num_points))
+
+    def get_index(self, position):
+        """Returns the index of the point a the given position."""
+
+        return self.x.get_index(position[0]) + self.y.get_index(position[1]) * self.x.samples
 
 
 class Dimension:
