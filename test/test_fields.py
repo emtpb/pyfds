@@ -52,3 +52,39 @@ def test_field1d_d_x():
 def test_field1d_d_x2():
     fld = fds.Field1D(3, 1, 3, 1, 5)
     assert np.allclose(fld.d_x2().toarray(), [[-2, 1, 0], [1, -2, 1], [0, 1, -2]])
+
+
+def test_field2d_init():
+    # create a field where the main material is 5
+    fld = fds.Field2D(100, 0.1, 100, 0.1, 100, 0.1, int(5))
+    # check if the "material parameter" 'real' for the complete field is 5
+    assert np.allclose(fld.material_vector('real'), 5)
+    assert np.size(fld.material_vector('real')) == 10000
+
+
+def test_field2d_d_x():
+    fld = fds.Field2D(2, 1, 2, 1, 10, 1, int(5))
+    assert np.allclose(fld.d_x().toarray(), [[-1, 1, 0, 0], [0, -1, 1, 0],
+                                             [0, 0, -1, 1], [0, 0, 0, -1]])
+    assert np.allclose(fld.d_x(backward=True).toarray(), [[1, 0, 0, 0], [-1, 1, 0, 0],
+                                                          [0, -1, 1, 0], [0, 0, -1, 1]])
+
+
+def test_field2d_d_x2():
+    fld = fds.Field2D(2, 1, 2, 1, 10, 1, int(5))
+    assert np.allclose(fld.d_x2().toarray(), [[-2, 1, 0, 0], [1, -2, 1, 0],
+                                              [0, 1, -2, 1], [0, 0, 1, -2]])
+
+
+def test_field2d_d_y():
+    fld = fds.Field2D(2, 1, 2, 1, 10, 1, int(5))
+    assert np.allclose(fld.d_y().toarray(), [[-1, 0, 1, 0], [0, -1, 0, 1],
+                                             [0, 0, -1, 0], [0, 0, 0, -1]])
+    assert np.allclose(fld.d_y(backward=True).toarray(), [[1, 0, 0, 0], [0, 1, 0, 0],
+                                                          [-1, 0, 1, 0], [0, -1, 0, 1]])
+
+
+def test_field2d_d_y2():
+    fld = fds.Field2D(2, 1, 2, 1, 10, 1, int(5))
+    assert np.allclose(fld.d_y2().toarray(), [[-2, 0, 1, 0], [0, -2, 0, 1],
+                                              [1, 0, -2, 0], [0, 1, 0, -2]])
