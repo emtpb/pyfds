@@ -20,7 +20,7 @@ class Field:
         return mat_vector
 
     def get_point_region(self, position, name=''):
-        """Creates a point region a the given position"""
+        """Creates a point region at the given position."""
 
         return reg.PointRegion([self.get_index(position)], position, name=name)
 
