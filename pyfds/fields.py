@@ -67,6 +67,11 @@ class Field1D(Field):
 
         return self.x.get_index(position)
 
+    def get_position(self, index):
+        """Returns the position of a point with the given index."""
+
+        return self.x.vector[index]
+
 
 class Field2D(Field):
     """Class for two dimensional fields."""
@@ -144,6 +149,11 @@ class Field2D(Field):
         """Returns the index of the point a the given position."""
 
         return self.x.get_index(position[0]) + self.y.get_index(position[1]) * self.x.samples
+
+    def get_position(self, index):
+        """Returns the position of a point with the given index."""
+
+        return self.x.vector[index % self.x.samples], self.y.vector[int(index / self.x.samples)]
 
 
 class Dimension:
