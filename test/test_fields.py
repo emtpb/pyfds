@@ -121,3 +121,11 @@ def test_field2d_get_line_region():
     assert np.allclose(reg.indices, [0, 4, 7, 11])
     reg = fld.get_line_region((0, 1.5, 2, 0))
     assert np.allclose(reg.indices, [9, 7, 4, 2])
+
+
+def test_field2d_get_rect_region():
+    fld = fds.Field2D(3, 1, 4, 0.5, 1, 1, int(5))
+    reg = fld.get_rect_region((0, 0, 1, 1))
+    assert np.allclose(reg.indices, [0, 3, 6, 1, 4, 7])
+    reg = fld.get_rect_region((2, 1.5, -1, -1))
+    assert np.allclose(reg.indices, [4, 7, 10, 5, 8, 11])

@@ -188,6 +188,21 @@ class Field2D(Field):
 
         return reg.LineRegion(point_indices, position, name=name)
 
+    def get_rect_region(self, position, name=''):
+        """Creates a rectangular region at the given position (origin_x, origin_y, size_x, size_y),
+        inclusive, origin is the lower left corner."""
+
+        x_start = self.x.get_index(position[0])
+        y_start = self.y.get_index(position[1])
+        x_end = self.x.get_index(position[0] + position[2])
+        y_end = self.y.get_index(position[1] + position[3])
+
+        x_start, x_end = min(x_start, x_end), max(x_start, x_end)
+        y_start, y_end = min(y_start, y_end), max(y_start, y_end)
+
+        return reg.RectRegion([x + y * self.x.samples for x in range(x_start, x_end + 1)
+                               for y in range(y_start, y_end + 1)], position, name)
+
 
 class Dimension:
     """Represents a space or time axis."""
