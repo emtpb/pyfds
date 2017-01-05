@@ -184,7 +184,7 @@ class Field2D(Field):
 
             x_position = start_idx % self.x.samples - np.round(ii / num_points * x_diff)
             y_position = int(start_idx / self.x.samples) - np.round(ii / num_points * y_diff)
-            point_indices.append(x_position + self.x.samples * y_position)
+            point_indices.append(int(x_position + self.x.samples * y_position))
 
         return reg.LineRegion(point_indices, position, name=name)
 
