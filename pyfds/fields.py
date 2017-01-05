@@ -167,6 +167,27 @@ class Field2D(Field):
 
         return self.x.vector[index % self.x.samples], self.y.vector[int(index / self.x.samples)]
 
+    def get_line_region(self, position, name=''):
+        """Creates a line region at the given position (start_x, start_y, end_x, end_y),
+        inclusive."""
+
+        start_idx = self.get_index(position[:2])
+        end_idx = self.get_index(position[2:])
+
+        x_diff = start_idx % self.x.samples - end_idx % self.x.samples
+        y_diff = int(start_idx / self.x.samples) - int(end_idx / self.x.samples)
+
+        num_points = max(np.abs([x_diff, y_diff]))
+        point_indices = []
+
+        for ii in range(num_points + 1):
+
+            x_position = start_idx % self.x.samples - np.round(ii / num_points * x_diff)
+            y_position = int(start_idx / self.x.samples) - np.round(ii / num_points * y_diff)
+            point_indices.append(x_position + self.x.samples * y_position)
+
+        return reg.LineRegion(point_indices, position, name=name)
+
 
 class Dimension:
     """Represents a space or time axis."""
