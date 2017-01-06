@@ -1,3 +1,4 @@
+import numpy as np
 from . import fields as fld
 
 
@@ -94,6 +95,79 @@ class Acoustic2D(fld.Field2D):
             self.velocity_y.write_outputs()
 
             self.pressure.values -= (self.a_p_vx.dot(self.velocity_x.values) +
+                                     self.a_p_vy.dot(self.velocity_y.values))
+
+
+class Acoustic3DAxi(fld.Field2D):
+    """Class for simulation of three dimensional, axial-symmetric acoustic fields. Note the x is
+    the radial direction, and y is the z direction."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.pressure = fld.FieldComponent(self.num_points)
+        self.velocity_x = fld.FieldComponent(self.num_points)
+        self.velocity_y = fld.FieldComponent(self.num_points)
+
+        # initialize attributes sparse matrices
+        self.a_p_vx = None
+        self.a_p_vy = None
+        self.a_vx_p = None
+        self.a_vy_p = None
+        self.a_vx_vx = None
+        self.a_vy_vy = None
+
+    def _radii(self):
+        """Returns an array the same size as self.num_points with the distance from the y-axis
+        (i.e. the x coordinate) of each velocity point (hence x.increment/2 is added). For axial-
+        symmetric fields, this is the radius, which is required to formulate the differential
+        operators."""
+
+        return np.tile(self.x.vector, self.y.samples) + self.x.increment/2
+
+    def simulate(self):
+        """Starts the simulation."""
+
+        self.a_p_vx = self.d_x(factors=(self.t.increment / self.x.increment *
+                                        self.material_vector('sound_velocity') ** 2 *
+                                        self.material_vector('density') /
+                                        self._radii()))
+        self.a_p_vy = self.d_y(factors=(self.t.increment / self.y.increment *
+                                        self.material_vector('sound_velocity') ** 2 *
+                                        self.material_vector('density')))
+        self.a_vx_p = self.d_x(factors=(self.t.increment / self.x.increment /
+                                        self.material_vector('density')), backward=True)
+        self.a_vy_p = self.d_y(factors=(self.t.increment / self.y.increment /
+                                        self.material_vector('density')), backward=True)
+        self.a_vx_vx = (self.d_x2(factors=(self.t.increment / self.x.increment ** 2 *
+                                           self.material_vector('absorption_coef') /
+                                           self.material_vector('density'))) +
+                        self.d_y2(factors=(self.t.increment / self.y.increment ** 2 *
+                                           self.material_vector('absorption_coef') /
+                                           self.material_vector('density'))) +
+                        self.d_x(factors=(self.t.increment / self.x.increment *
+                                          self.material_vector('absorption_coef') /
+                                          self.material_vector('density') / self._radii())))
+        self.a_vy_vy = self.a_vx_vx
+
+        for ii in range(self.t.samples):
+
+            self.pressure.apply_bounds(ii)
+            self.pressure.write_outputs()
+
+            self.velocity_x.values -= (self.a_vx_p.dot(self.pressure.values) -
+                                       self.a_vx_vx.dot(self.velocity_x.values) +
+                                       self.t.increment * self.material_vector('absorption_coef') /
+                                       self.material_vector('density') * self.velocity_x.values /
+                                       self._radii() ** 2)
+            self.velocity_y.values -= (self.a_vy_p.dot(self.pressure.values) -
+                                       self.a_vy_vy.dot(self.velocity_y.values))
+
+            self.velocity_x.apply_bounds(ii)
+            self.velocity_x.write_outputs()
+            self.velocity_y.apply_bounds(ii)
+            self.velocity_y.write_outputs()
+
+            self.pressure.values -= (self.a_p_vx.dot(self.velocity_x.values * self._radii()) +
                                      self.a_p_vy.dot(self.velocity_y.values))
 
 
