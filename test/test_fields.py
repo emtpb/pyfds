@@ -68,8 +68,10 @@ def test_field2d_d_x():
     fld = fds.Field2D(2, 1, 2, 1, 10, 1, int(5))
     assert np.allclose(fld.d_x().toarray(), [[-1, 1, 0, 0], [0, -1, 1, 0],
                                              [0, 0, -1, 1], [0, 0, 0, -1]])
-    assert np.allclose(fld.d_x(backward=True).toarray(), [[1, 0, 0, 0], [-1, 1, 0, 0],
-                                                          [0, -1, 1, 0], [0, 0, -1, 1]])
+    assert np.allclose(fld.d_x(variant='backward').toarray(), [[1, 0, 0, 0], [-1, 1, 0, 0],
+                                                               [0, -1, 1, 0], [0, 0, -1, 1]])
+    assert np.allclose(fld.d_x(variant='central').toarray(), [[0, 0.5, 0, 0], [-0.5, 0, 0.5, 0],
+                                                              [0, -0.5, 0, 0.5], [0, 0, -0.5, 0]])
 
 
 def test_field2d_d_x2():
@@ -82,8 +84,10 @@ def test_field2d_d_y():
     fld = fds.Field2D(2, 1, 2, 1, 10, 1, int(5))
     assert np.allclose(fld.d_y().toarray(), [[-1, 0, 1, 0], [0, -1, 0, 1],
                                              [0, 0, -1, 0], [0, 0, 0, -1]])
-    assert np.allclose(fld.d_y(backward=True).toarray(), [[1, 0, 0, 0], [0, 1, 0, 0],
-                                                          [-1, 0, 1, 0], [0, -1, 0, 1]])
+    assert np.allclose(fld.d_y(variant='backward').toarray(), [[1, 0, 0, 0], [0, 1, 0, 0],
+                                                               [-1, 0, 1, 0], [0, -1, 0, 1]])
+    assert np.allclose(fld.d_y(variant='central').toarray(), [[0, 0, 0.5, 0], [0, 0, 0, 0.5],
+                                                              [-0.5, 0, 0, 0], [0, -0.5, 0, 0]])
 
 
 def test_field2d_d_y2():

@@ -105,37 +105,44 @@ class Field2D(Field):
     def num_points(self):
         return self.x.samples * self.y.samples
 
-    def d_x(self, factors=None, backward=False):
+    def d_x(self, factors=None, variant='forward'):
         """Creates a sparse matrix for computing the first derivative with respect to x multiplied
-        by factors given for every point. Uses forward difference quotient by default, specify
-        backward=True if required otherwise"""
+        by factors given for every point. Uses forward difference quotient by default."""
 
         # use ones as factors if none are specified
         if factors is None:
             factors = np.array(1).repeat(self.num_points)
 
-        if not backward:
-            return sp.dia_matrix((np.array([-factors, factors]), [0, 1]),
-                                 shape=(self.num_points, self.num_points))
-        else:
-            return sp.dia_matrix((np.array([-factors, factors]), [-1, 0]),
-                                 shape=(self.num_points, self.num_points))
+        variants = {
+            'forward': sp.dia_matrix((np.array([-factors, factors]), [0, 1]),
+                                     shape=(self.num_points, self.num_points)),
+            'central': sp.dia_matrix((np.array([-factors/2, factors/2]), [-1, 1]),
+                                     shape=(self.num_points, self.num_points)),
+            'backward': sp.dia_matrix((np.array([-factors, factors]), [-1, 0]),
+                                      shape=(self.num_points, self.num_points))
+        }
 
-    def d_y(self, factors=None, backward=False):
+        return variants.get(variant)
+
+    def d_y(self, factors=None, variant='forward'):
         """Creates a sparse matrix for computing the first derivative with respect to y multiplied
-        by factors given for every point. Uses forward difference quotient by default, specify
-        backward=True if required otherwise"""
+        by factors given for every point. Uses forward difference quotient by default."""
 
         # use ones as factors if none are specified
         if factors is None:
             factors = np.array(1).repeat(self.num_points)
 
-        if not backward:
-            return sp.dia_matrix((np.array([-factors, factors]), [0, self.x.samples]),
-                                 shape=(self.num_points, self.num_points))
-        else:
-            return sp.dia_matrix((np.array([-factors, factors]), [-self.x.samples, 0]),
-                                 shape=(self.num_points, self.num_points))
+        variants = {
+            'forward': sp.dia_matrix((np.array([-factors, factors]), [0, self.x.samples]),
+                                     shape=(self.num_points, self.num_points)),
+            'central': sp.dia_matrix(
+                (np.array([-factors/2, factors/2]), [-self.x.samples, self.x.samples]),
+                shape=(self.num_points, self.num_points)),
+            'backward': sp.dia_matrix((np.array([-factors, factors]), [-self.x.samples, 0]),
+                                      shape=(self.num_points, self.num_points))
+        }
+
+        return variants.get(variant)
 
     def d_x2(self, factors=None):
         """Creates a sparse matrix for computing the second derivative with respect to x multiplied
