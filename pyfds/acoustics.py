@@ -40,6 +40,13 @@ class Acoustic1D(fld.Field1D):
 
             self.pressure.values -= self.a_p_v.dot(self.velocity.values)
 
+    def is_stable(self):
+        """Checks if simulation satisfies stability conditions. Does not account for instability
+        due to high absorption and includes a little headroom (1%)."""
+
+        return np.all(self.material_vector('sound_velocity') <
+                      0.99 * self.x.increment / self.t.increment)
+
 
 class Acoustic2D(fld.Field2D):
     """Class for simulation of two dimensional acoustic fields."""
