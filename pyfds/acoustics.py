@@ -146,7 +146,8 @@ class Acoustic3DAxi(fld.Field2D):
                                            self.material_vector('density'))) +
                         self.d_x(factors=(self.t.increment / self.x.increment *
                                           self.material_vector('absorption_coef') /
-                                          self.material_vector('density') / self._radii())))
+                                          self.material_vector('density') / self._radii()),
+                                 variant='central'))
         self.a_vy_vy = self.a_vx_vx
 
         for ii in range(self.t.samples):
