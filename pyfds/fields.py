@@ -42,8 +42,7 @@ class Field1D(Field):
 
     def d_x(self, factors=None, variant='forward'):
         """Creates a sparse matrix for computing the first derivative with respect to x multiplied
-        by factors given for every point. Uses forward difference quotient by default, specify
-        backward=True if required otherwise"""
+        by factors given for every point. Uses forward difference quotient by default."""
 
         # use ones as factors if none are specified
         if factors is None:
