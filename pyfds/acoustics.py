@@ -104,6 +104,13 @@ class Acoustic2D(fld.Field2D):
             self.pressure.values -= (self.a_p_vx.dot(self.velocity_x.values) +
                                      self.a_p_vy.dot(self.velocity_y.values))
 
+    def is_stable(self):
+        """Checks if simulation satisfies stability conditions. Does not account for instability
+        due to high absorption and includes a little headroom (1%)."""
+
+        return np.all(self.material_vector('sound_velocity') <
+                      0.99 * min(self.x.increment, self.y.increment) / self.t.increment)
+
 
 class Acoustic3DAxi(fld.Field2D):
     """Class for simulation of three dimensional, axial-symmetric acoustic fields. Note the x is
@@ -177,6 +184,13 @@ class Acoustic3DAxi(fld.Field2D):
 
             self.pressure.values -= (self.a_p_vx.dot(self.velocity_x.values * self._radii()) +
                                      self.a_p_vy.dot(self.velocity_y.values))
+
+    def is_stable(self):
+        """Checks if simulation satisfies stability conditions. Does not account for instability
+        due to high absorption and includes a little headroom (1%)."""
+
+        return np.all(self.material_vector('sound_velocity') <
+                      0.99 * min(self.x.increment, self.y.increment) / self.t.increment)
 
 
 class AcousticMaterial:
