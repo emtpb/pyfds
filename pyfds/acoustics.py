@@ -22,7 +22,7 @@ class Acoustic1D(fld.Field1D):
                                        self.material_vector('sound_velocity') ** 2 *
                                        self.material_vector('density')))
         self.a_v_p = self.d_x(factors=(self.t.increment / self.x.increment /
-                                       self.material_vector('density')), backward=True)
+                                       self.material_vector('density')), variant='backward')
         self.a_v_v = self.d_x2(factors=(self.t.increment / self.x.increment ** 2 *
                                         self.material_vector('absorption_coef') /
                                         self.material_vector('density')))
