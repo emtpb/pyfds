@@ -281,4 +281,3 @@ class FieldComponent:
             else:
                 [signal.append(self.values[index]) for index, signal in
                  zip(output.region.indices, output.signals)]
-
