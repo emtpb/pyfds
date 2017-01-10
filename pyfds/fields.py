@@ -48,16 +48,17 @@ class Field1D(Field):
         if factors is None:
             factors = np.array(1).repeat(self.num_points)
 
-        variants = {
-            'forward': sp.dia_matrix((np.array([-factors, factors]), [0, 1]),
-                                     shape=(self.num_points, self.num_points)),
-            'central': sp.dia_matrix((np.array([-factors/2, factors/2]), [-1, 1]),
-                                     shape=(self.num_points, self.num_points)),
-            'backward': sp.dia_matrix((np.array([-factors, factors]), [-1, 0]),
-                                      shape=(self.num_points, self.num_points))
-        }
-
-        return variants.get(variant)
+        if variant == 'forward':
+            return sp.dia_matrix((np.array([-factors, factors]), [0, 1]),
+                                 shape=(self.num_points, self.num_points))
+        elif variant == 'central':
+            return sp.dia_matrix((np.array([-factors / 2, factors / 2]), [-1, 1]),
+                                 shape=(self.num_points, self.num_points))
+        elif variant == 'backward':
+            return sp.dia_matrix((np.array([-factors, factors]), [-1, 0]),
+                                 shape=(self.num_points, self.num_points))
+        else:
+            raise ValueError('Unknown difference quotient variant {}.'.format(variant))
 
     def d_x2(self, factors=None):
         """Creates a sparse matrix for computing the second derivative with respect to x multiplied
@@ -113,16 +114,17 @@ class Field2D(Field):
         if factors is None:
             factors = np.array(1).repeat(self.num_points)
 
-        variants = {
-            'forward': sp.dia_matrix((np.array([-factors, factors]), [0, 1]),
-                                     shape=(self.num_points, self.num_points)),
-            'central': sp.dia_matrix((np.array([-factors/2, factors/2]), [-1, 1]),
-                                     shape=(self.num_points, self.num_points)),
-            'backward': sp.dia_matrix((np.array([-factors, factors]), [-1, 0]),
-                                      shape=(self.num_points, self.num_points))
-        }
-
-        return variants.get(variant)
+        if variant == 'forward':
+            return sp.dia_matrix((np.array([-factors, factors]), [0, 1]),
+                                 shape=(self.num_points, self.num_points))
+        elif variant == 'central':
+            return sp.dia_matrix((np.array([-factors/2, factors/2]), [-1, 1]),
+                                 shape=(self.num_points, self.num_points))
+        elif variant == 'backward':
+            return sp.dia_matrix((np.array([-factors, factors]), [-1, 0]),
+                                 shape=(self.num_points, self.num_points))
+        else:
+            raise ValueError('Unknown difference quotient variant {}.'.format(variant))
 
     def d_y(self, factors=None, variant='forward'):
         """Creates a sparse matrix for computing the first derivative with respect to y multiplied
@@ -132,17 +134,18 @@ class Field2D(Field):
         if factors is None:
             factors = np.array(1).repeat(self.num_points)
 
-        variants = {
-            'forward': sp.dia_matrix((np.array([-factors, factors]), [0, self.x.samples]),
-                                     shape=(self.num_points, self.num_points)),
-            'central': sp.dia_matrix(
+        if variant == 'forward':
+            return sp.dia_matrix((np.array([-factors, factors]), [0, self.x.samples]),
+                                 shape=(self.num_points, self.num_points))
+        elif variant == 'central':
+            return sp.dia_matrix(
                 (np.array([-factors/2, factors/2]), [-self.x.samples, self.x.samples]),
-                shape=(self.num_points, self.num_points)),
-            'backward': sp.dia_matrix((np.array([-factors, factors]), [-self.x.samples, 0]),
-                                      shape=(self.num_points, self.num_points))
-        }
-
-        return variants.get(variant)
+                shape=(self.num_points, self.num_points))
+        elif variant == 'backward':
+            return sp.dia_matrix((np.array([-factors, factors]), [-self.x.samples, 0]),
+                                 shape=(self.num_points, self.num_points))
+        else:
+            raise ValueError('Unknown difference quotient variant {}.'.format(variant))
 
     def d_x2(self, factors=None):
         """Creates a sparse matrix for computing the second derivative with respect to x multiplied
