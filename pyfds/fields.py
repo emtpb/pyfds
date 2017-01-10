@@ -6,6 +6,10 @@ from . import regions as reg
 class Field:
     """Base class for all fields."""
 
+    @property
+    def num_points(self):
+        raise NotImplementedError
+
     def material_vector(self, mat_parameter):
         """Get a vector that contains the specified material parameter for every point of the
         field."""
