@@ -1,5 +1,6 @@
 import numpy as np
 import scipy.sparse as sp
+import warnings as wn
 from . import regions as reg
 
 
@@ -20,12 +21,18 @@ class Field:
         """Get a vector that contains the specified material parameter for every point of the
         field."""
 
+        param_found = False
         mat_vector = np.zeros(self.num_points)
 
         for mat_reg in self.material_regions:
             for mat in mat_reg.materials:
                 if hasattr(mat, mat_parameter):
                     mat_vector[mat_reg.region.indices] = getattr(mat, mat_parameter)
+                    param_found = True
+
+        if not param_found:
+            wn.warn('Material parameter {} not found in set materials. Returning zeros.'
+                    .format(mat_parameter), stacklevel=2)
 
         return mat_vector
 
