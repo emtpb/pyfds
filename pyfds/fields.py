@@ -10,6 +10,9 @@ class Field:
     def num_points(self):
         raise NotImplementedError
 
+    def get_index(self, position):
+        raise NotImplementedError
+
     def material_vector(self, mat_parameter):
         """Get a vector that contains the specified material parameter for every point of the
         field."""
