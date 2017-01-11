@@ -6,6 +6,9 @@ from . import regions as reg
 class Field:
     """Base class for all fields."""
 
+    def __init__(self):
+        self.material_regions = []
+
     @property
     def num_points(self):
         raise NotImplementedError
@@ -36,12 +39,13 @@ class Field1D(Field):
     """Class for one dimensional fields."""
 
     def __init__(self, x_samples, x_delta, t_samples, t_delta, material):
+        super().__init__()
         self.x = Dimension(x_samples, x_delta)
         self.t = Dimension(t_samples, t_delta)
 
         # add main material
-        self.material_regions = [reg.MaterialRegion(reg.LineRegion(
-            np.arange(self.x.samples, dtype='int_'), [0, max(self.x.vector)], 'main'), material)]
+        self.material_regions.append(reg.MaterialRegion(reg.LineRegion(
+            np.arange(self.x.samples, dtype='int_'), [0, max(self.x.vector)], 'main'), material))
 
     @property
     def num_points(self):
@@ -100,14 +104,15 @@ class Field2D(Field):
     """Class for two dimensional fields."""
 
     def __init__(self, x_samples, x_delta, y_samples, y_delta, t_samples, t_delta, material):
+        super().__init__()
         self.x = Dimension(x_samples, x_delta)
         self.y = Dimension(y_samples, y_delta)
         self.t = Dimension(t_samples, t_delta)
 
         # add main material
-        self.material_regions = [reg.MaterialRegion(reg.RectRegion(
+        self.material_regions.append(reg.MaterialRegion(reg.RectRegion(
             np.arange(self.num_points, dtype='int_'),
-            [0, max(self.x.vector), 0, max(self.y.vector)], 'main'), material)]
+            [0, max(self.x.vector), 0, max(self.y.vector)], 'main'), material))
 
     @property
     def num_points(self):
