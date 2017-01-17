@@ -15,8 +15,8 @@ class Acoustic1D(fld.Field1D):
         self.a_v_p = None
         self.a_v_v = None
 
-    def simulate(self):
-        """Starts the simulation."""
+    def create_matrices(self):
+        """Creates the a_* matrices required for simulation."""
 
         self.a_p_v = self.d_x(factors=(self.t.increment / self.x.increment *
                                        self.material_vector('sound_velocity') ** 2 *
@@ -26,6 +26,13 @@ class Acoustic1D(fld.Field1D):
         self.a_v_v = self.d_x2(factors=(self.t.increment / self.x.increment ** 2 *
                                         self.material_vector('absorption_coef') /
                                         self.material_vector('density')))
+
+    def simulate(self):
+        """Starts the simulation."""
+
+        # create a_* matrices if create_matrices was not called before
+        if self.a_p_v is None or self.a_v_p is None or self.a_v_v is None:
+            self.create_matrices()
 
         for ii in range(self.t.samples):
 
