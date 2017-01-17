@@ -72,8 +72,8 @@ class Acoustic2D(fld.Field2D):
         self.a_vx_vx = None
         self.a_vy_vy = None
 
-    def simulate(self):
-        """Starts the simulation."""
+    def create_matrices(self):
+        """Creates the a_* matrices required for simulation."""
 
         self.a_p_vx = self.d_x(factors=(self.t.increment / self.x.increment *
                                         self.material_vector('sound_velocity') ** 2 *
@@ -92,6 +92,14 @@ class Acoustic2D(fld.Field2D):
                                            self.material_vector('absorption_coef') /
                                            self.material_vector('density'))))
         self.a_vy_vy = self.a_vx_vx
+
+    def simulate(self):
+        """Starts the simulation."""
+
+        # create a_* matrices if create_matrices was not called before
+        if self.a_p_vx is None or self.a_p_vy is None or self.a_vx_p is None or \
+           self.a_vy_p is None or self.a_vx_vx is None or self.a_vy_vy is None:
+            self.create_matrices()
 
         for ii in range(self.t.samples):
 
