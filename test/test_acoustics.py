@@ -37,3 +37,23 @@ def test_acoustic2d_create_matrices():
                                                [100, 100, -400, 100], [0, 100, 100, -400]])
     assert np.allclose(fld.a_vy_vy.toarray(), [[-400, 100, 100, 0], [100, -400, 100, 100],
                                                [100, 100, -400, 100], [0, 100, 100, -400]])
+
+
+def test_acoustic3d_axi_create_matrices():
+    fld = fds.Acoustic3DAxi(t_delta=1, t_samples=1,
+                            x_delta=1, x_samples=2,
+                            y_delta=1, y_samples=2,
+                            material=fds.AcousticMaterial(1, 1, bulk_viscosity=1))
+    fld.create_matrices()
+    assert np.allclose(fld.a_p_vx.toarray(), [[-2, 2/3, 0, 0], [0, -2/3, 2, 0],
+                                              [0, 0, -2, 2/3], [0, 0, 0, -2/3]])
+    assert np.allclose(fld.a_p_vy.toarray(), [[-1, 0, 1, 0], [0, -1, 0, 1],
+                                              [0, 0, -1, 0], [0, 0, 0, -1]])
+    assert np.allclose(fld.a_vx_p.toarray(), [[1, 0, 0, 0], [-1, 1, 0, 0], [0, -1, 1, 0],
+                                              [0, 0, -1, 1]])
+    assert np.allclose(fld.a_vy_p.toarray(), [[1, 0, 0, 0], [0, 1, 0, 0], [-1, 0, 1, 0],
+                                              [0, -1, 0, 1]])
+    assert np.allclose(fld.a_vx_vx.toarray(), [[-4, 4/3, 1, 0], [0, -4, 2, 1],
+                                               [1, 2/3, -4, 4/3], [0, 1, 0, -4]])
+    assert np.allclose(fld.a_vy_vy.toarray(), [[-4, 4/3, 1, 0], [0, -4, 2, 1],
+                                               [1, 2/3, -4, 4/3], [0, 1, 0, -4]])
