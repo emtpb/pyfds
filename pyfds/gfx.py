@@ -31,7 +31,8 @@ class Animator:
         self.show_boundaries = True
         self.show_materials = True
         self.show_output = True
-        self.plot_queue = mp.Queue()
+
+        self._plot_queue = mp.Queue()
 
 
 class Animator1D(Animator):
@@ -89,20 +90,20 @@ class Animator1D(Animator):
                 for output in component.outputs:
                     self.plot_region(output.region)
 
-        sim_process = mp.Process(target=self._sim_function, args=(self.plot_queue,))
+        sim_process = mp.Process(target=self._sim_function, args=(self._plot_queue,))
         sim_process.start()
 
         # wait for simulation initialization
-        while self.plot_queue.empty():
+        while self._plot_queue.empty():
             pl.pause(0.1)
 
         finished = False
         while not finished:
             # wait for new simulation result
-            while self.plot_queue.empty():
+            while self._plot_queue.empty():
                 pl.pause(0.01)
 
-            data = self.plot_queue.get()
+            data = self._plot_queue.get()
             # simulation function sends None when simulation is complete
             if data is None:
                 finished = True
