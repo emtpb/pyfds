@@ -26,7 +26,8 @@ setup(
     # Runtime dependencies
     install_requires=[
         'numpy',
-        'scipy'
+        'scipy',
+        'matplotlib'
     ],
 
     # Setup/build dependencies; setuptools_scm required for git-based versioning
