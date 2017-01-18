@@ -9,6 +9,7 @@ class Field:
 
     def __init__(self):
         self.material_regions = []
+        self.step = 0
 
     @property
     def num_points(self):
