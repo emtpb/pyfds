@@ -40,13 +40,12 @@ class Animator1D(Animator):
 
         self.plot = None
 
-    @staticmethod
-    def _sim_function(field, steps_per_frame, observed_component, queue):
+    def _sim_function(self, queue):
         """Simulation function to be started as a separate process."""
 
-        for ii in range(int(field.t.samples / steps_per_frame)):
-            field.simulate(steps_per_frame)
-            queue.put(getattr(field, observed_component).values)
+        for ii in range(int(self.field.t.samples / self.steps_per_frame)):
+            self.field.simulate(self.steps_per_frame)
+            queue.put(getattr(self.field, self.observed_component).values)
 
         # put None when simulation finishes
         queue.put(None)
@@ -59,9 +58,7 @@ class Animator1D(Animator):
         self.plot.axes.set_xlim(0, max(self.field.x.vector))
         self.plot.axes.set_ylim(-self.scale, self.scale)
 
-        sim_process = mp.Process(target=self._sim_function,
-                                 args=(self.field, self.steps_per_frame,
-                                       self.observed_component, self.plot_queue,))
+        sim_process = mp.Process(target=self._sim_function, args=(self.plot_queue,))
         sim_process.start()
 
         # wait for simulation initialization
