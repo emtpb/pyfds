@@ -1,7 +1,9 @@
 import matplotlib.pyplot as pp
 import multiprocessing as mp
+import numpy as np
 import pylab as pl
 from . import fields as fld
+from . import regions as reg
 
 
 class Animator:
@@ -50,6 +52,20 @@ class Animator1D(Animator):
         # put None when simulation finishes
         queue.put(None)
 
+    def plot_region(self, region):
+        """Shows the given region in the field plot."""
+
+        if type(region) == reg.PointRegion:
+            pp.plot(np.ones(2) * region.point_coordinates,
+                    np.array([-1, 1]) * self.scale, color='black')
+        elif type(region) == reg.LineRegion:
+            pp.plot(np.ones(2) * region.line_coordinates[0],
+                    np.array([-1, 1]) * self.scale, color='black')
+            pp.plot(np.ones(2) * region.line_coordinates[1],
+                    np.array([-1, 1]) * self.scale, color='black')
+        else:
+            raise TypeError('Unknown type in region list: {}'.format(type(region)))
+
     def start_simulation(self):
         """Starts the simulation with visualization."""
 
@@ -57,6 +73,21 @@ class Animator1D(Animator):
         self.plot, = pp.plot([])
         self.plot.axes.set_xlim(0, max(self.field.x.vector))
         self.plot.axes.set_ylim(-self.scale, self.scale)
+        pp.grid(True)
+
+        if self.show_materials:
+            for mat_region in self.field.material_regions:
+                self.plot_region(mat_region.region)
+
+        if self.show_boundaries:
+            for name, component in self.field_components.items():
+                for boundary in component.boundaries:
+                    self.plot_region(boundary.region)
+
+        if self.show_output:
+            for name, component in self.field_components.items():
+                for output in component.outputs:
+                    self.plot_region(output.region)
 
         sim_process = mp.Process(target=self._sim_function, args=(self.plot_queue,))
         sim_process.start()
