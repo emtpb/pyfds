@@ -27,22 +27,26 @@ class Acoustic1D(fld.Field1D):
                                         self.material_vector('absorption_coef') /
                                         self.material_vector('density')))
 
-    def simulate(self):
+    def simulate(self, num_steps=None):
         """Starts the simulation."""
+
+        if not num_steps:
+            num_steps = self.t.samples
 
         # create a_* matrices if create_matrices was not called before
         if self.a_p_v is None or self.a_v_p is None or self.a_v_v is None:
             self.create_matrices()
 
-        for ii in range(self.t.samples):
+        start_step = self.step
+        for self.step in range(start_step, start_step + num_steps):
 
-            self.pressure.apply_bounds(ii)
+            self.pressure.apply_bounds(self.step)
             self.pressure.write_outputs()
 
             self.velocity.values -= (self.a_v_p.dot(self.pressure.values) -
                                      self.a_v_v.dot(self.velocity.values))
 
-            self.velocity.apply_bounds(ii)
+            self.velocity.apply_bounds(self.step)
             self.velocity.write_outputs()
 
             self.pressure.values -= self.a_p_v.dot(self.velocity.values)
