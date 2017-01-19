@@ -2,6 +2,7 @@ import matplotlib.pyplot as pp
 import multiprocessing as mp
 import numpy as np
 import pylab as pl
+import siprefix as si
 from . import fields as fld
 from . import regions as reg
 
@@ -33,6 +34,13 @@ class Animator:
         self.show_output = True
 
         self._plot_queue = mp.Queue()
+        self._x_axis_prefix, self._x_axis_factor, _ = si.autoscale(max(self.field.x.vector))
+        self._t_prefix, self._t_factor, _ = si.autoscale(max(self.field.t.vector))
+
+        self.plot_title = ''
+        self.x_label = '$x$'
+        self.y_label = self.observed_component
+        self.time_precision = 2
 
 
 class Animator1D(Animator):
@@ -41,14 +49,15 @@ class Animator1D(Animator):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.plot = None
+        self.axes = None
 
     def _sim_function(self, queue):
         """Simulation function to be started as a separate process."""
 
         for ii in range(int(self.field.t.samples / self.steps_per_frame)):
             self.field.simulate(self.steps_per_frame)
-            queue.put(getattr(self.field, self.observed_component).values)
+            queue.put((self.field.t.vector[self.field.step],
+                       getattr(self.field, self.observed_component).values))
 
         # put None when simulation finishes
         queue.put(None)
@@ -57,13 +66,13 @@ class Animator1D(Animator):
         """Shows the given region in the field plot."""
 
         if type(region) == reg.PointRegion:
-            pp.plot(np.ones(2) * region.point_coordinates,
-                    np.array([-1, 1]) * self.scale, color='black')
+            self.axes.plot(np.ones(2) * region.point_coordinates / self._x_axis_factor,
+                           np.array([-1, 1]) * self.scale, color='black')
         elif type(region) == reg.LineRegion:
-            pp.plot(np.ones(2) * region.line_coordinates[0],
-                    np.array([-1, 1]) * self.scale, color='black')
-            pp.plot(np.ones(2) * region.line_coordinates[1],
-                    np.array([-1, 1]) * self.scale, color='black')
+            self.axes.plot(np.ones(2) * region.line_coordinates[0] / self._x_axis_factor,
+                           np.array([-1, 1]) * self.scale, color='black')
+            self.axes.plot(np.ones(2) * region.line_coordinates[1] / self._x_axis_factor,
+                           np.array([-1, 1]) * self.scale, color='black')
         else:
             raise TypeError('Unknown type in region list: {}'.format(type(region)))
 
@@ -71,9 +80,12 @@ class Animator1D(Animator):
         """Starts the simulation with visualization."""
 
         pp.figure()
-        self.plot, = pp.plot([])
-        self.plot.axes.set_xlim(0, max(self.field.x.vector))
-        self.plot.axes.set_ylim(-self.scale, self.scale)
+        self.axes = pp.gca()
+        main_plot, = self.axes.plot([])
+        self.axes.set_xlim(0, max(self.field.x.vector) / self._x_axis_factor)
+        self.axes.set_ylim(-self.scale, self.scale)
+        self.axes.set_xlabel('{0} / {1}m'.format(self.x_label, self._x_axis_prefix))
+        self.axes.set_ylabel(self.y_label)
         pp.grid(True)
 
         if self.show_materials:
@@ -103,12 +115,16 @@ class Animator1D(Animator):
             while self._plot_queue.empty():
                 pl.pause(0.01)
 
-            data = self._plot_queue.get()
+            message = self._plot_queue.get()
             # simulation function sends None when simulation is complete
-            if data is None:
+            if message is None:
                 finished = True
             else:
-                self.plot.set_data(self.field.x.vector, data)
+                time, data = message
+                self.axes.title.set_text('{title} $t$ = {time:.{prec}f} {prefix}s'
+                                         .format(title=self.plot_title, time=time/self._t_factor,
+                                                 prec=self.time_precision, prefix=self._t_prefix))
+                main_plot.set_data(self.field.x.vector / self._x_axis_factor, data)
                 pl.pause(self.frame_delay)
 
         pp.show()
