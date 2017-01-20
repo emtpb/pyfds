@@ -42,15 +42,6 @@ class Animator:
         self.x_label = '$x$'
         self.time_precision = 2
 
-
-class Animator1D(Animator):
-    """Animator for one dimensional field simulation in pyFDs."""
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.y_label = self.observed_component
-
     def _sim_function(self, queue):
         """Simulation function to be started as a separate process."""
 
@@ -61,6 +52,15 @@ class Animator1D(Animator):
 
         # put None when simulation finishes
         queue.put(None)
+
+
+class Animator1D(Animator):
+    """Animator for one dimensional field simulation in pyFDs."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.y_label = self.observed_component
 
     def plot_region(self, region):
         """Shows the given region in the field plot."""
