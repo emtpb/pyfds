@@ -97,17 +97,22 @@ class Acoustic2D(fld.Field2D):
                                            self.material_vector('density'))))
         self.a_vy_vy = self.a_vx_vx
 
-    def simulate(self):
+    def simulate(self, num_steps=None):
         """Starts the simulation."""
+
+        if not num_steps:
+            num_steps = self.t.samples
 
         # create a_* matrices if create_matrices was not called before
         if self.a_p_vx is None or self.a_p_vy is None or self.a_vx_p is None or \
            self.a_vy_p is None or self.a_vx_vx is None or self.a_vy_vy is None:
             self.create_matrices()
 
-        for ii in range(self.t.samples):
 
-            self.pressure.apply_bounds(ii)
+        start_step = self.step
+        for self.step in range(start_step, start_step + num_steps):
+
+            self.pressure.apply_bounds(self.step)
             self.pressure.write_outputs()
 
             self.velocity_x.values -= (self.a_vx_p.dot(self.pressure.values) -
@@ -115,9 +120,9 @@ class Acoustic2D(fld.Field2D):
             self.velocity_y.values -= (self.a_vy_p.dot(self.pressure.values) -
                                        self.a_vy_vy.dot(self.velocity_y.values))
 
-            self.velocity_x.apply_bounds(ii)
+            self.velocity_x.apply_bounds(self.step)
             self.velocity_x.write_outputs()
-            self.velocity_y.apply_bounds(ii)
+            self.velocity_y.apply_bounds(self.step)
             self.velocity_y.write_outputs()
 
             self.pressure.values -= (self.a_p_vx.dot(self.velocity_x.values) +
@@ -183,17 +188,21 @@ class Acoustic3DAxi(fld.Field2D):
                                  variant='central'))
         self.a_vy_vy = self.a_vx_vx
 
-    def simulate(self):
+    def simulate(self, num_steps=None):
         """Starts the simulation."""
+
+        if not num_steps:
+            num_steps = self.t.samples
 
         # create a_* matrices if create_matrices was not called before
         if self.a_p_vx is None or self.a_p_vy is None or self.a_vx_p is None or \
            self.a_vy_p is None or self.a_vx_vx is None or self.a_vy_vy is None:
             self.create_matrices()
 
-        for ii in range(self.t.samples):
+        start_step = self.step
+        for self.step in range(start_step, start_step + num_steps):
 
-            self.pressure.apply_bounds(ii)
+            self.pressure.apply_bounds(self.step)
             self.pressure.write_outputs()
 
             self.velocity_x.values -= (self.a_vx_p.dot(self.pressure.values) -
@@ -204,9 +213,9 @@ class Acoustic3DAxi(fld.Field2D):
             self.velocity_y.values -= (self.a_vy_p.dot(self.pressure.values) -
                                        self.a_vy_vy.dot(self.velocity_y.values))
 
-            self.velocity_x.apply_bounds(ii)
+            self.velocity_x.apply_bounds(self.step)
             self.velocity_x.write_outputs()
-            self.velocity_y.apply_bounds(ii)
+            self.velocity_y.apply_bounds(self.step)
             self.velocity_y.write_outputs()
 
             self.pressure.values -= (self.a_p_vx.dot(self.velocity_x.values * self._radii()) +
