@@ -37,9 +37,9 @@ class Animator:
         self._x_axis_prefix, self._x_axis_factor, _ = si.autoscale(max(self.field.x.vector))
         self._t_prefix, self._t_factor, _ = si.autoscale(max(self.field.t.vector))
 
+        self.axes = None
         self.plot_title = ''
         self.x_label = '$x$'
-        self.y_label = self.observed_component
         self.time_precision = 2
 
 
@@ -49,7 +49,7 @@ class Animator1D(Animator):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.axes = None
+        self.y_label = self.observed_component
 
     def _sim_function(self, queue):
         """Simulation function to be started as a separate process."""
