@@ -2,6 +2,7 @@ import matplotlib.patches as pa
 import matplotlib.pyplot as pp
 import multiprocessing as mp
 import numpy as np
+import plottools as pt
 import pylab as pl
 import siprefix as si
 from . import fields as fld
@@ -178,7 +179,8 @@ class Animator2D(Animator):
         self.axes = pp.gca()
         main_plot = self.axes.imshow(self.field_as_matrix(),
                                      extent=(0, max(self.field.x.vector) / self._x_axis_factor,
-                                             max(self.field.y.vector) / self._y_axis_factor, 0))
+                                             max(self.field.y.vector) / self._y_axis_factor, 0),
+                                     cmap=pt.emt_helix())
         self.axes.set_xlim(0, max(self.field.x.vector) / self._x_axis_factor)
         self.axes.set_ylim(0, max(self.field.y.vector) / self._y_axis_factor)
         self.axes.set_xlabel('{0} / {1}m'.format(self.x_label, self._x_axis_prefix))
