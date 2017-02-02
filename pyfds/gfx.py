@@ -14,6 +14,15 @@ class Animator:
 
     def __init__(self, field, observed_component=None, steps_per_frame=10, scale=1,
                  frame_delay=1e-2):
+        """Class constructor.
+
+        Args:
+            field: Field to be observed.
+            observed_component: Component to be observed (as string).
+            steps_per_frame: Simulation steps between updates of the animation.
+            scale: Scale of the animation.
+            frame_delay: Delay between animation updates.
+        """
 
         self.field = field
         self.field_components = {name: getattr(self.field, name) for name in dir(self.field)
@@ -45,7 +54,12 @@ class Animator:
         self.time_precision = 2
 
     def _sim_function(self, queue):
-        """Simulation function to be started as a separate process."""
+        """Simulation function to be started as a separate process.
+
+        Args:
+            queue: Instance of multiprocessing.Queue that is used to transfer data between
+                simulation and visualization process.
+        """
 
         for ii in range(int(self.field.t.samples / self.steps_per_frame)):
             self.field.simulate(self.steps_per_frame)
@@ -60,12 +74,21 @@ class Animator1D(Animator):
     """Animator for one dimensional field simulation in pyFDs."""
 
     def __init__(self, *args, **kwargs):
+        """Class constructor.
+
+        Args:
+            See pyfds.gfx.Animator constructor arguments.
+        """
         super().__init__(*args, **kwargs)
 
         self.y_label = self.observed_component
 
     def plot_region(self, region):
-        """Shows the given region in the field plot."""
+        """Shows the given region in the field plot.
+
+        Args:
+            region: Region to be plotted.
+        """
 
         if type(region) == reg.PointRegion:
             self.axes.plot(np.ones(2) * region.point_coordinates / self._x_axis_factor,
@@ -136,6 +159,11 @@ class Animator2D(Animator):
     """Animator for one dimensional field simulation in pyFDs."""
 
     def __init__(self, *args, **kwargs):
+        """Class constructor.
+
+        Args:
+            See pyfds.gfx.Animator constructor arguments.
+        """
         super().__init__(*args, **kwargs)
 
         self._y_axis_prefix, self._y_axis_factor, _ = si.autoscale(max(self.field.y.vector))
@@ -144,7 +172,11 @@ class Animator2D(Animator):
         self.c_label = self.observed_component
 
     def plot_region(self, region):
-        """Shows the given region in the field plot."""
+        """Shows the given region in the field plot.
+
+        Args:
+            region: Region to be plotted.
+        """
 
         if type(region) == reg.PointRegion:
             self.axes.scatter(region.point_coordinates[0] / self._x_axis_factor,
@@ -165,7 +197,14 @@ class Animator2D(Animator):
             raise TypeError('Unknown type in region list: {}'.format(type(region)))
 
     def field_as_matrix(self, component=None):
-        """Returns a field component (observed component by default) as a numpy matrix."""
+        """Returns a field component (observed component by default) as a numpy matrix.
+
+        Args:
+            component: Field component to be returned as matrix.
+
+        Returns:
+            Field as matrix.
+        """
 
         if component is None:
             component = getattr(self.field, self.observed_component).values
