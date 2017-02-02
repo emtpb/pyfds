@@ -6,6 +6,11 @@ class Acoustic1D(fld.Field1D):
     """Class for simulation of one dimensional acoustic fields."""
 
     def __init__(self, *args, **kwargs):
+        """Class constructor.
+
+        Args:
+            See pyfds.fields.Field1D constructor arguments.
+        """
         super().__init__(*args, **kwargs)
         self.pressure = fld.FieldComponent(self.num_points)
         self.velocity = fld.FieldComponent(self.num_points)
@@ -28,7 +33,11 @@ class Acoustic1D(fld.Field1D):
                                         self.material_vector('density')))
 
     def simulate(self, num_steps=None):
-        """Starts the simulation."""
+        """Starts the simulation.
+
+        Args:
+            num_steps: Number of steps to simulate (self.t.samples by default).
+        """
 
         if not num_steps:
             num_steps = self.t.samples
@@ -53,7 +62,11 @@ class Acoustic1D(fld.Field1D):
 
     def is_stable(self):
         """Checks if simulation satisfies stability conditions. Does not account for instability
-        due to high absorption and includes a little headroom (1%)."""
+        due to high absorption and includes a little headroom (1%).
+
+        Returns:
+            True if stable, False if not.
+        """
 
         return np.all(self.material_vector('sound_velocity') <
                       0.99 * self.x.increment / self.t.increment)
@@ -63,6 +76,12 @@ class Acoustic2D(fld.Field2D):
     """Class for simulation of two dimensional acoustic fields."""
 
     def __init__(self, *args, **kwargs):
+        """Class constructor.
+
+        Args:
+            See pyfds.fields.Field2D constructor arguments.
+        """
+
         super().__init__(*args, **kwargs)
         self.pressure = fld.FieldComponent(self.num_points)
         self.velocity_x = fld.FieldComponent(self.num_points)
@@ -98,7 +117,11 @@ class Acoustic2D(fld.Field2D):
         self.a_vy_vy = self.a_vx_vx
 
     def simulate(self, num_steps=None):
-        """Starts the simulation."""
+        """Starts the simulation.
+
+        Args:
+            num_steps: Number of steps to simulate (self.t.samples by default).
+        """
 
         if not num_steps:
             num_steps = self.t.samples
@@ -107,7 +130,6 @@ class Acoustic2D(fld.Field2D):
         if self.a_p_vx is None or self.a_p_vy is None or self.a_vx_p is None or \
            self.a_vy_p is None or self.a_vx_vx is None or self.a_vy_vy is None:
             self.create_matrices()
-
 
         start_step = self.step
         for self.step in range(start_step, start_step + num_steps):
@@ -130,7 +152,11 @@ class Acoustic2D(fld.Field2D):
 
     def is_stable(self):
         """Checks if simulation satisfies stability conditions. Does not account for instability
-        due to high absorption and includes a little headroom (1%)."""
+        due to high absorption and includes a little headroom (1%).
+
+        Returns:
+            True if stable, False if not.
+        """
 
         return np.all(self.material_vector('sound_velocity') <
                       0.99 * min(self.x.increment, self.y.increment) / self.t.increment)
@@ -141,6 +167,12 @@ class Acoustic3DAxi(fld.Field2D):
     the radial direction, and y is the z direction."""
 
     def __init__(self, *args, **kwargs):
+        """Class constructor.
+
+        Args:
+            See pyfds.fields.Field2D constructor arguments.
+        """
+
         super().__init__(*args, **kwargs)
         self.pressure = fld.FieldComponent(self.num_points)
         self.velocity_x = fld.FieldComponent(self.num_points)
@@ -158,7 +190,11 @@ class Acoustic3DAxi(fld.Field2D):
         """Returns an array the same size as self.num_points with the distance from the y-axis
         (i.e. the x coordinate) of each velocity point (hence x.increment/2 is added). For axial-
         symmetric fields, this is the radius, which is required to formulate the differential
-        operators."""
+        operators.
+
+        Returns
+            Radius of each velocity point.
+        """
 
         return np.tile(self.x.vector, self.y.samples) + self.x.increment/2
 
@@ -189,7 +225,11 @@ class Acoustic3DAxi(fld.Field2D):
         self.a_vy_vy = self.a_vx_vx
 
     def simulate(self, num_steps=None):
-        """Starts the simulation."""
+        """Starts the simulation.
+
+        Args:
+            num_steps: Number of steps to simulate (self.t.samples by default).
+        """
 
         if not num_steps:
             num_steps = self.t.samples
@@ -223,7 +263,11 @@ class Acoustic3DAxi(fld.Field2D):
 
     def is_stable(self):
         """Checks if simulation satisfies stability conditions. Does not account for instability
-        due to high absorption and includes a little headroom (1%)."""
+        due to high absorption and includes a little headroom (1%).
+
+        Returns:
+            True if stable, False if not.
+        """
 
         return np.all(self.material_vector('sound_velocity') <
                       0.99 * min(self.x.increment, self.y.increment) / self.t.increment)
@@ -235,7 +279,17 @@ class AcousticMaterial:
     def __init__(self, sound_velocity, density,
                  shear_viscosity=0, bulk_viscosity=0,
                  thermal_conductivity=0, isobaric_heat_cap=1, isochoric_heat_cap=1):
-        """Default values for optional parameters create lossless medium."""
+        """Class constructor. Default values for optional parameters create lossless medium.
+
+        Args:
+            sound_velocity: Sound velocity.
+            density: Density.
+            shear_viscosity: Shear viscosity.
+            bulk_viscosity: Bulk viscosity.
+            thermal_conductivity: Thermal conductivity coefficient.
+            isobaric_heat_cap: Isobaric heat capacitance (at constant pressure).
+            isochoric_heat_cap: Isochoric heat capacitance (at constant volume).
+        """
 
         self.sound_velocity = sound_velocity
         self.density = density
@@ -247,7 +301,8 @@ class AcousticMaterial:
 
     @property
     def absorption_coef(self):
-        """This is a helper variable that sums up all losses into a single quantity."""
+        """Returns a helper variable (called mu in publications by L. Claes) that sums up all
+        losses into a single quantity."""
 
         return (4/3 * self.shear_viscosity + self.bulk_viscosity + self.thermal_conductivity *
                 (self.isobaric_heat_cap - self.isochoric_heat_cap) /
