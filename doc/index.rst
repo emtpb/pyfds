@@ -7,9 +7,12 @@ Contents
 --------
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
 
     fields
+    regions
+    acoustics
+    gfx
 
 
 
