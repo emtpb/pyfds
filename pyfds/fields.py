@@ -13,14 +13,30 @@ class Field:
 
     @property
     def num_points(self):
+        """Returns number of points in the field."""
         raise NotImplementedError
 
     def get_index(self, position):
+        """Returns the index of a point at the given position.
+
+        Args:
+            position: Position of the requested point.
+
+        Returns:
+            Index of the point.
+        """
         raise NotImplementedError
 
     def material_vector(self, mat_parameter):
         """Get a vector that contains the specified material parameter for every point of the
-        field."""
+        field.
+
+        Args:
+            mat_parameter: Material parameter of interest.
+
+        Returns:
+            Vector which contains the specified material parameter for each point in the field.
+        """
 
         param_found = False
         mat_vector = np.zeros(self.num_points)
@@ -38,7 +54,15 @@ class Field:
         return mat_vector
 
     def get_point_region(self, position, name=''):
-        """Creates a point region at the given position."""
+        """Creates a point region at the given position.
+
+        Args:
+            position: Position of the point region.
+            name: Name of the point region.
+
+        Returns:
+            Point region.
+        """
 
         return reg.PointRegion([self.get_index(position)], position, name=name)
 
@@ -47,6 +71,16 @@ class Field1D(Field):
     """Class for one dimensional fields."""
 
     def __init__(self, x_samples, x_delta, t_samples, t_delta, material):
+        """Class constructor.
+
+        Args:
+            x_samples: Number of samples in x direction.
+            x_delta: Increment in x direction.
+            t_samples: Number of time samples.
+            t_delta: Time increment.
+            material: Main material of the field.
+        """
+
         super().__init__()
         self.x = Dimension(x_samples, x_delta)
         self.t = Dimension(t_samples, t_delta)
@@ -57,11 +91,21 @@ class Field1D(Field):
 
     @property
     def num_points(self):
+        """Returns number of points in the field."""
+
         return self.x.samples
 
     def d_x(self, factors=None, variant='forward'):
         """Creates a sparse matrix for computing the first derivative with respect to x multiplied
-        by factors given for every point. Uses forward difference quotient by default."""
+        by factors given for every point. Uses forward difference quotient by default.
+
+        Args:
+            factors: Factor for each point to be applied after derivation.
+            variant: Variant for the difference quotient ('forward', 'central', or 'backward').
+
+        Returns:
+            Sparse matrix the calculate derivatives of field components.
+        """
 
         # use ones as factors if none are specified
         if factors is None:
@@ -81,7 +125,14 @@ class Field1D(Field):
 
     def d_x2(self, factors=None):
         """Creates a sparse matrix for computing the second derivative with respect to x multiplied
-        by factors given for every point."""
+        by factors given for every point. Uses central difference quotient.
+
+        Args:
+            factors: Factor for each point to be applied after derivation.
+
+        Returns:
+            Sparse matrix the calculate second derivatives of field components.
+        """
 
         # use ones as factors if none are specified
         if factors is None:
@@ -91,17 +142,39 @@ class Field1D(Field):
                              shape=(self.num_points, self.num_points))
 
     def get_index(self, position):
-        """Returns the index of the point a the given position."""
+        """Returns the index of a point at the given position.
+
+        Args:
+            position: Position of the requested point.
+
+        Returns:
+            Index of the point.
+        """
 
         return self.x.get_index(position)
 
     def get_position(self, index):
-        """Returns the position of a point with the given index."""
+        """Returns the position of a point with the given index.
+
+        Args:
+            index: Index of a point.
+
+        Returns:
+            Position of the point as x coordinate.
+        """
 
         return self.x.vector[index]
 
     def get_line_region(self, position, name=''):
-        """Creates a line region at the given position (start, end), inclusive."""
+        """Creates a line region at the given position (start, end), inclusive.
+
+        Args:
+            position: Position of the line region (start, end), as x coordinates.
+            name: Name of the region.
+
+        Returns:
+            Line region.
+        """
 
         return reg.LineRegion([index for index in range(self.get_index(position[0]),
                                                         self.get_index(position[1]) + 1)],
@@ -112,6 +185,18 @@ class Field2D(Field):
     """Class for two dimensional fields."""
 
     def __init__(self, x_samples, x_delta, y_samples, y_delta, t_samples, t_delta, material):
+        """Class constructor.
+
+        Args:
+            x_samples: Number of samples in x direction.
+            x_delta: Increment in x direction.
+            y_samples: Number of samples in y direction.
+            y_delta: Increment in y direction.
+            t_samples: Number of time samples.
+            t_delta: Time increment.
+            material: Main material of the field.
+        """
+
         super().__init__()
         self.x = Dimension(x_samples, x_delta)
         self.y = Dimension(y_samples, y_delta)
@@ -128,7 +213,15 @@ class Field2D(Field):
 
     def d_x(self, factors=None, variant='forward'):
         """Creates a sparse matrix for computing the first derivative with respect to x multiplied
-        by factors given for every point. Uses forward difference quotient by default."""
+        by factors given for every point. Uses forward difference quotient by default.
+
+        Args:
+            factors: Factor for each point to be applied after derivation.
+            variant: Variant for the difference quotient ('forward', 'central', or 'backward').
+
+        Returns:
+            Sparse matrix the calculate derivatives of field components.
+        """
 
         # use ones as factors if none are specified
         if factors is None:
@@ -148,7 +241,15 @@ class Field2D(Field):
 
     def d_y(self, factors=None, variant='forward'):
         """Creates a sparse matrix for computing the first derivative with respect to y multiplied
-        by factors given for every point. Uses forward difference quotient by default."""
+        by factors given for every point. Uses forward difference quotient by default.
+
+        Args:
+            factors: Factor for each point to be applied after derivation.
+            variant: Variant for the difference quotient ('forward', 'central', or 'backward').
+
+        Returns:
+            Sparse matrix the calculate derivatives of field components.
+        """
 
         # use ones as factors if none are specified
         if factors is None:
@@ -169,7 +270,14 @@ class Field2D(Field):
 
     def d_x2(self, factors=None):
         """Creates a sparse matrix for computing the second derivative with respect to x multiplied
-        by factors given for every point."""
+        by factors given for every point. Uses central difference quotient.
+
+        Args:
+            factors: Factor for each point to be applied after derivation.
+
+        Returns:
+            Sparse matrix the calculate second derivatives of field components.
+        """
 
         # use ones as factors if none are specified
         if factors is None:
@@ -179,8 +287,15 @@ class Field2D(Field):
                              shape=(self.num_points, self.num_points))
 
     def d_y2(self, factors=None):
-        """Creates a sparse matrix for computing the second derivative with respect to x multiplied
-        by factors given for every point."""
+        """Creates a sparse matrix for computing the second derivative with respect to y multiplied
+        by factors given for every point. Uses central difference quotient.
+
+        Args:
+            factors: Factor for each point to be applied after derivation.
+
+        Returns:
+            Sparse matrix the calculate second derivatives of field components.
+        """
 
         # use ones as factors if none are specified
         if factors is None:
@@ -191,18 +306,40 @@ class Field2D(Field):
                              shape=(self.num_points, self.num_points))
 
     def get_index(self, position):
-        """Returns the index of the point a the given position."""
+        """Returns the index of a point at the given position.
+
+        Args:
+            position: Position of the requested point.
+
+        Returns:
+            Index of the point.
+        """
 
         return self.x.get_index(position[0]) + self.y.get_index(position[1]) * self.x.samples
 
     def get_position(self, index):
-        """Returns the position of a point with the given index."""
+        """Returns the position of a point with the given index.
+
+        Args:
+            index: Index of a point.
+
+        Returns:
+            Position of the point as (x coordinate, y coordinate).
+        """
 
         return self.x.vector[index % self.x.samples], self.y.vector[int(index / self.x.samples)]
 
     def get_line_region(self, position, name=''):
         """Creates a line region at the given position (start_x, start_y, end_x, end_y),
-        inclusive."""
+        inclusive.
+
+        Args:
+            position: Position of the line region (start_x, start_y, end_x, end_y).
+            name: Name of the region.
+
+        Returns:
+            Line region.
+        """
 
         start_idx = self.get_index(position[:2])
         end_idx = self.get_index(position[2:])
@@ -223,7 +360,15 @@ class Field2D(Field):
 
     def get_rect_region(self, position, name=''):
         """Creates a rectangular region at the given position (origin_x, origin_y, size_x, size_y),
-        inclusive, origin is the lower left corner."""
+        inclusive, origin is the lower left corner.
+
+        Args:
+            position: Position of the rectangular region origin_x, origin_y, size_x, size_y).
+            name: Name of the region.
+
+        Returns:
+            Rectangular region.
+        """
 
         x_start = self.x.get_index(position[0])
         y_start = self.y.get_index(position[1])
@@ -241,6 +386,12 @@ class Dimension:
     """Represents a space or time axis."""
 
     def __init__(self, samples, increment):
+        """Class constructor.
+
+        Args:
+            samples: Number of samples in the axis.
+            increment: Increment between samples.
+        """
 
         self.samples = int(samples)
         self.increment = increment
@@ -248,10 +399,19 @@ class Dimension:
 
     @property
     def vector(self):
+        """Returns the axis as a vector."""
+
         return np.arange(start=0, stop=self.samples) * self.increment
 
     def get_index(self, value):
-        """Returns the index of a given value."""
+        """Returns the index of a given value.
+
+        Args:
+            value: Value the index requested for.
+
+        Returns:
+            Index.
+        """
 
         index, = np.where(np.abs(self.vector - value) <= self.snap_radius)
         assert len(index) < 2, "Multiple points found within snap radius of given value."
@@ -264,6 +424,11 @@ class FieldComponent:
     """A single component of a field (e.g. electric field in the x direction)."""
 
     def __init__(self, num_points):
+        """Class constructor.
+
+        Args:
+            num_points: Number of points in the field component.
+        """
 
         # values of the field component
         self.values = np.zeros(num_points)
@@ -273,7 +438,11 @@ class FieldComponent:
         self.outputs = []
 
     def apply_bounds(self, step):
-        """Applies the  boundary conditions to the field component."""
+        """Applies the boundary conditions to the field component.
+
+        Args:
+            step: Simulation step, required if boundary is a signal that changes of time.
+        """
 
         for bound in self.boundaries:
             if np.ndim(bound.value) == 0 or \
