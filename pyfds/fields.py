@@ -66,6 +66,16 @@ class Field:
 
         return reg.PointRegion([self.get_index(position)], position, name=name)
 
+    def add_material_region(self, *args, **kwargs):
+        """Adds a material region to the field.
+
+        Args:
+            See pyfds.regions.MaterialRegion constructor arguments.
+        """
+
+        new_material_region = reg.MaterialRegion(*args, **kwargs)
+        self.material_regions.append(new_material_region)
+
 
 class Field1D(Field):
     """Class for one dimensional fields."""
@@ -470,3 +480,23 @@ class FieldComponent:
             else:
                 [signal.append(self.values[index]) for index, signal in
                  zip(output.region.indices, output.signals)]
+
+    def add_boundary(self, *args, **kwargs):
+        """Adds a boundary to the field component.
+
+        Args:
+            See pyfds.regions.Boundary constructor arguments.
+        """
+
+        new_bound = reg.Boundary(*args, **kwargs)
+        self.boundaries.append(new_bound)
+
+    def add_output(self, *args, **kwargs):
+        """Adds output to the field component.
+
+        Args:
+            See pyfds.regions.Output constructor arguments.
+        """
+
+        new_output = reg.Output(*args, **kwargs)
+        self.outputs.append(new_output)
