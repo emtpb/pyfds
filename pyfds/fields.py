@@ -96,8 +96,8 @@ class Field1D(Field):
         self.t = Dimension(t_samples, t_delta)
 
         # add main material
-        self.material_regions.append(reg.MaterialRegion(reg.LineRegion(
-            np.arange(self.x.samples, dtype='int_'), [0, max(self.x.vector)], 'main'), material))
+        self.add_material_region(self.get_line_region((0, max(self.x.vector)), name='main'),
+                                 material)
 
     @property
     def num_points(self):
@@ -213,9 +213,8 @@ class Field2D(Field):
         self.t = Dimension(t_samples, t_delta)
 
         # add main material
-        self.material_regions.append(reg.MaterialRegion(reg.RectRegion(
-            np.arange(self.num_points, dtype='int_'),
-            [0, max(self.x.vector), 0, max(self.y.vector)], 'main'), material))
+        self.add_material_region(self.get_rect_region(
+            (0, 0, max(self.x.vector), max(self.y.vector)), name='main'), material)
 
     @property
     def num_points(self):
