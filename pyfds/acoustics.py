@@ -113,7 +113,7 @@ class Acoustic2D(fld.Field2D):
                                            self.material_vector('density'))) +
                         self.d_y2(factors=(self.t.increment / self.y.increment ** 2 *
                                            self.material_vector('absorption_coef') /
-                                           self.material_vector('density'))))
+                                           self.material_vector('density')))).todia()
         self.a_vy_vy = self.a_vx_vx
 
     def simulate(self, num_steps=None):
@@ -221,7 +221,7 @@ class Acoustic3DAxi(fld.Field2D):
                         self.d_x(factors=(self.t.increment / self.x.increment *
                                           self.material_vector('absorption_coef') /
                                           self.material_vector('density') / self._radii()),
-                                 variant='central'))
+                                 variant='central')).todia()
         self.a_vy_vy = self.a_vx_vx
 
     def simulate(self, num_steps=None):
