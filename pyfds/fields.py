@@ -454,20 +454,8 @@ class FieldComponent:
         """
 
         for bound in self.boundaries:
-            if np.ndim(bound.value) == 0 or \
-                    (np.ndim(bound.value) == 1 and type(bound.value) == list):
-                # if a single value or a list of single values for each index is given
-                self.values[bound.region.indices] = \
-                    (bound.additive * self.values[bound.region.indices] + bound.value)
-            elif type(bound.value) == np.ndarray:
-                # if a signals is given
-                self.values[bound.region.indices] = \
-                    (bound.additive * self.values[bound.region.indices] + bound.value[step])
-            else:
-                # if a list of signals for each index is given
-                for signal, ii in enumerate(bound.value):
-                    self.values[bound.region.indices[ii]] = \
-                        (bound.additive * self.values[bound.region.indices[ii]] + signal[step])
+            self.values[bound.region.indices] = bound.apply(self.values[bound.region.indices],
+                                                            step=step)
 
     def write_outputs(self):
         """Writes the values of the field component to the outputs."""

@@ -84,6 +84,29 @@ class Boundary:
         self.value = value
         self.additive = additive
 
+    def apply(self, old_values, step):
+        """Apply the boundary.
+
+        Args:
+            old_values: Old values of the points in the boundary.
+            step: Time step of the simulation (required if signals are to be applied).
+
+        Returns:
+            New values for the points in the boundary.
+        """
+
+        if np.ndim(self.value) == 0 or \
+                (np.ndim(self.value) == 1 and type(self.value) == list):
+            # if a single value or a list of single values for each index is given
+                return self.additive * old_values + self.value
+        elif type(self.value) == np.ndarray:
+            # if a signal is given
+            return self.additive * old_values + self.value[step]
+        else:
+            # if a list of signals for each index is given
+            return [self.additive * old_values[ii] + signal[step]
+                    for ii, signal in enumerate(self.value)]
+
 
 class Output:
     """Specifies values to be extracted from the FieldComponent after each simulation step."""
