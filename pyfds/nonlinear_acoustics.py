@@ -31,7 +31,7 @@ class NonlinearAcoustic1D(fld.Field1D):
         """Creates the a_* matrices required for simulation."""
 
         self.a_d_v = self.d_x(factors=(self.t.increment / self.x.increment *
-                                       self.material_vector('sound_velocity')))
+                                       np.ones(self.x.samples)))
         self.a_v_p = self.d_x(factors=(self.t.increment / self.x.increment) *
                               np.ones(self.x.samples), variant='backward')
         self.a_v_v = self.d_x2(factors=(self.t.increment / self.x.increment ** 2 *
