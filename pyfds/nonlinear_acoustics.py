@@ -2,8 +2,8 @@ import numpy as np
 from . import fields as fld
 
 
-class NonlinearAcoustic1D(fld.Field1D):
-    """Class for simulation of one dimensional nonlinear acoustic fields."""
+class IdealGas1D(fld.Field1D):
+    """Class for simulation of one dimensional nonlinear acoustic fields in ideal gases."""
 
     def __init__(self, convective=True, nl_state=True, *args, **kwargs):
         """Class constructor.
@@ -87,7 +87,7 @@ class NonlinearAcoustic1D(fld.Field1D):
             self.density.write_outputs()
 
             if self.nl_state:
-                # using Tait equation
+                # using modified equation of state, so static pressure is not required
                 self.pressure.values = density * sound_velocity**2 / heat_cap_ratio * \
                     (((density + self.density.values) / density)**heat_cap_ratio - 1)
             else:
