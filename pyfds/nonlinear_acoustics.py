@@ -1,5 +1,6 @@
 import numpy as np
 from . import fields as fld
+from . import acoustics as ac
 
 
 class IdealGas1D(fld.Field1D):
@@ -103,3 +104,70 @@ class IdealGas1D(fld.Field1D):
 
         return np.all(self.material_vector('sound_velocity') <
                       0.99 * self.x.increment / self.t.increment)
+
+
+class Acoustic2ndOrder1D(IdealGas1D):
+    """Class for simulation of one dimensional nonlinear acoustic fields using second order 
+    approximation.
+    
+    Args:
+        See pyfds.fields.Field1D constructor arguments.
+    """
+
+    def simulate(self, num_steps=None):
+        """Starts the simulation.
+
+        Args:
+            num_steps: Number of steps to simulate (self.t.samples by default).
+        """
+
+        if not num_steps:
+            num_steps = self.t.samples
+
+        # create a_* matrices if create_matrices was not called before
+        if self.a_d_v is None or self.a_v_p is None or self.a_v_v is None or self.a_v_v2 is None:
+            self.create_matrices()
+
+        # buffer material vectors for better performance
+        density = self.material_vector('density')
+        d_rho_p = self.material_vector('d_rho_p')
+        d_rho2_p = self.material_vector('d_rho2_p')
+
+        start_step = self.step
+        for self.step in range(start_step, start_step + num_steps):
+
+            self.pressure.apply_bounds(self.step)
+            self.pressure.write_outputs()
+
+            self.velocity.values -= (self.a_v_p.dot(self.pressure.values) /
+                                     (density + self.density.values) +
+                                     self.a_v_v2.dot(self.velocity.values) -
+                                     self.a_v_v.dot(self.velocity.values) /
+                                     (density + self.density.values))
+
+            self.velocity.apply_bounds(self.step)
+            self.velocity.write_outputs()
+
+            self.density.values -= self.a_d_v.dot((self.density.values + density) *
+                                                  self.velocity.values)
+
+            self.density.apply_bounds(self.step)
+            self.density.write_outputs()
+
+            self.pressure.values = d_rho_p * self.density.values + \
+                d_rho2_p / 2 * self.density.values**2
+
+
+class AcousticMaterial2ndOrder(ac.AcousticMaterial):
+    """Class for specification of acoustic material parameters."""
+
+    def __init__(self, d_rho_p, d_rho2_p, *args, **kwargs):
+        """Class constructor. Default values for optional parameters create lossless medium.
+
+        Args:
+            d_rho_p: First derivative of the pressure with respect to density.
+            d_rho2_p: Second derivative of the pressure with respect to density.
+        """
+        super().__init__(*args, **kwargs)
+        self.d_rho_p = d_rho_p
+        self.d_rho2_p = d_rho2_p
