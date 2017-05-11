@@ -161,13 +161,17 @@ class Acoustic2ndOrder1D(IdealGas1D):
 class AcousticMaterial2ndOrder(ac.AcousticMaterial):
     """Class for specification of acoustic material parameters."""
 
-    def __init__(self, d_rho_p, d_rho2_p, *args, **kwargs):
+    def __init__(self, d_rho_p=None, d_rho2_p=0, *args, **kwargs):
         """Class constructor. Default values for optional parameters create lossless medium.
 
         Args:
             d_rho_p: First derivative of the pressure with respect to density.
             d_rho2_p: Second derivative of the pressure with respect to density.
         """
+
         super().__init__(*args, **kwargs)
-        self.d_rho_p = d_rho_p
+        if not d_rho_p:
+            self.d_rho_p = super().sound_velocity**2
+        else:
+            self.d_rho_p = d_rho_p
         self.d_rho2_p = d_rho2_p
