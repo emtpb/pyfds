@@ -28,7 +28,6 @@ setup(
         'numpy',
         'scipy',
         'matplotlib',
-        'siprefix',
     ],
 
     # Setup/build dependencies; setuptools_scm required for git-based versioning

@@ -3,7 +3,6 @@ import matplotlib.pyplot as pp
 import multiprocessing as mp
 import numpy as np
 import pylab as pl
-import siprefix as si
 from . import fields as fld
 from . import regions as reg
 
@@ -44,8 +43,8 @@ class Animator:
         self.show_output = True
 
         self._plot_queue = mp.Queue()
-        self._x_axis_prefix, self._x_axis_factor, _ = si.autoscale(max(self.field.x.vector))
-        self._t_prefix, self._t_factor, _ = si.autoscale(max(self.field.t.vector))
+        self._x_axis_prefix, self._x_axis_factor = get_prefix(max(self.field.x.vector))
+        self._t_prefix, self._t_factor = get_prefix(max(self.field.t.vector))
 
         self.axes = None
         self.plot_title = ''
@@ -165,7 +164,7 @@ class Animator2D(Animator):
         """
         super().__init__(*args, **kwargs)
 
-        self._y_axis_prefix, self._y_axis_factor, _ = si.autoscale(max(self.field.y.vector))
+        self._y_axis_prefix, self._y_axis_factor = get_prefix(max(self.field.y.vector))
 
         self.y_label = '$y$'
         self.c_label = self.observed_component
@@ -267,3 +266,39 @@ class Animator2D(Animator):
                 pl.pause(self.frame_delay)
 
         pp.show()
+
+
+def get_prefix(value):
+    """Determine the metric prefix for a given value.
+    
+    Args:
+        value: Value to determine the prefix for.
+
+    Returns:
+        prefix: String specifying the prefix.
+        factor: Scale factor of the prefix.        
+    """
+    for factor, prefix in sorted(prefixes.items()):
+        if value / factor < 1e3:
+            break
+    return prefix, factor
+
+prefixes = {
+    1e-24: 'y',
+    1e-21: 'z',
+    1e-18: 'a',
+    1e-15: 'f',
+    1e-12: 'p',
+    1e-9: 'n',
+    1e-6: 'µ',
+    1e-3: 'm',
+    1e0: '',
+    1e3: 'k',
+    1e6: 'M',
+    1e9: 'G',
+    1e12: 'T',
+    1e15: 'P',
+    1e18: 'E',
+    1e21: 'Z',
+    1e24: 'Y',
+}
