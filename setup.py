@@ -14,7 +14,7 @@ setup(
     url='http://emt.uni-paderborn.de',
     author='Leander Claes',
     author_email='claes@emt.uni-paderborn.de',
-    license='Proprietary',
+    license='BSD',
 
     # Automatically generate version number from git tags
     use_scm_version=True,
@@ -40,7 +40,7 @@ setup(
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Science/Research',
-        'License :: Other/Proprietary License',
+        'License :: OSI Approved :: BSD License',
         'Programming Language :: Python :: 3',
         'Topic :: Scientific/Engineering',
     ],
