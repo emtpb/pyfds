@@ -1,4 +1,5 @@
 import numpy as np
+import warnings as wn
 from . import fields as fld
 from . import acoustics as ac
 
@@ -108,11 +109,20 @@ class IdealGas1D(fld.Field1D):
 
 class Acoustic2ndOrder1D(IdealGas1D):
     """Class for simulation of one dimensional nonlinear acoustic fields using second order 
-    approximation.
-    
-    Args:
-        See pyfds.fields.Field1D constructor arguments.
-    """
+    approximation."""
+
+    def __init__(self, *args, **kwargs):
+        """Class constructor.
+
+        Args:
+            See pyfds.fields.Field1D constructor arguments.
+        """
+
+        if not (hasattr(kwargs['material'], 'd_rho_p') and
+                hasattr(kwargs['material'], 'd_rho2_p')):
+            wn.warn('Material with properties d_rho_p and d_rho2_p is required for 2nd order '
+                    'nonlinear acoustic simulation.')
+        super().__init__(*args, **kwargs)
 
     def simulate(self, num_steps=None):
         """Starts the simulation.
