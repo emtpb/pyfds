@@ -15,6 +15,10 @@ Contents
     nonlinear_acoustics
     gfx
 
+.. toctree::
+    :maxdepth: 2
+
+    examples
 
 
 Indices and tables
