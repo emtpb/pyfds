@@ -38,3 +38,44 @@ Visualizing one dimensional simulations
 
         # start simulation with animation
         anim.start_simulation()
+
+
+Visualizing two dimensional simulations
+---------------------------------------
+
+.. code-block:: python
+
+    import pyfds as fds
+    import scipy.signal as sg
+
+    # placement in __main__ is required as animation used multiprocessing
+    if __name__ == '__main__':
+
+        # create field
+        fld = fds.Acoustic2D(t_delta=1e-6, t_samples=2000,
+                             x_delta=1e-3, x_samples=401,
+                             y_delta=1e-3, y_samples=301,
+                             material=fds.AcousticMaterial(sound_velocity=700,
+                                                           density=1000,
+                                                           shear_viscosity=1e-2))
+
+        # generate some signal for excitation
+        ex_signal = sg.gausspulse(fld.t.vector - 1.2e-4, int(30e3), 0.6)
+
+        # add angled boundary line for excitation
+        fld.pressure.add_boundary(fld.get_line_region((0.05, 0.01, 0.1, 0.05)),
+                                  value=ex_signal, additive=True)
+
+        # add a rectangular region with a different material
+        fld.add_material_region(fld.get_rect_region((0.1, 0.1, 0.1, 0.1)),
+                                material=fds.AcousticMaterial(200, 1000))
+
+        # add a linear boundary at right side to prevent the waves from warping around
+        fld.velocity_x.add_boundary(fld.get_line_region((0, 0, 0, max(fld.y.vector))))
+
+        # create animator (observe pressure, update every 10th simulation set, color map limit 0.5)
+        anim = fds.Animator2D(field=fld, observed_component='pressure', steps_per_frame=10, scale=0.5)
+
+        # start simulation with animation
+        anim.start_simulation()
+
