@@ -164,7 +164,8 @@ class Animator2D(Animator):
         """
         super().__init__(*args, **kwargs)
 
-        self._y_axis_prefix, self._y_axis_factor = get_prefix(max(self.field.y.vector))
+        self._y_axis_prefix = self._x_axis_prefix
+        self._y_axis_factor = self._x_axis_factor
 
         self.y_label = '$y$'
         self.c_label = self.observed_component
