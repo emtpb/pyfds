@@ -5,7 +5,7 @@ from . import acoustics as ac
 
 
 class IdealGas1D(fld.Field1D):
-    """Class for simulation of one dimensional nonlinear acoustic fields in ideal gases."""
+    """Class for simulation of one-dimensional nonlinear acoustic fields in ideal gases."""
 
     def __init__(self, convective=True, nl_state=True, *args, **kwargs):
         """Class constructor.
@@ -108,7 +108,7 @@ class IdealGas1D(fld.Field1D):
 
 
 class Acoustic2ndOrder1D(IdealGas1D):
-    """Class for simulation of one dimensional nonlinear acoustic fields using second order 
+    """Class for simulation of one-dimensional nonlinear acoustic fields using second order 
     approximation."""
 
     def __init__(self, *args, **kwargs):

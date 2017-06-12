@@ -3,7 +3,7 @@ from . import fields as fld
 
 
 class Acoustic1D(fld.Field1D):
-    """Class for simulation of one dimensional acoustic fields."""
+    """Class for simulation of one-dimensional acoustic fields."""
 
     def __init__(self, *args, **kwargs):
         """Class constructor.
@@ -73,7 +73,7 @@ class Acoustic1D(fld.Field1D):
 
 
 class Acoustic2D(fld.Field2D):
-    """Class for simulation of two dimensional acoustic fields."""
+    """Class for simulation of two-dimensional acoustic fields."""
 
     def __init__(self, *args, **kwargs):
         """Class constructor.
@@ -163,7 +163,7 @@ class Acoustic2D(fld.Field2D):
 
 
 class Acoustic3DAxi(fld.Field2D):
-    """Class for simulation of three dimensional, axial-symmetric acoustic fields. Note the x is
+    """Class for simulation of three-dimensional, axial-symmetric acoustic fields. Note the x is
     the radial direction, and y is the z direction."""
 
     def __init__(self, *args, **kwargs):

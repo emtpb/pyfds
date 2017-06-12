@@ -78,7 +78,7 @@ class Field:
 
 
 class Field1D(Field):
-    """Class for one dimensional fields."""
+    """Class for one-dimensional fields."""
 
     def __init__(self, x_samples, x_delta, t_samples, t_delta, material):
         """Class constructor.
@@ -192,7 +192,7 @@ class Field1D(Field):
 
 
 class Field2D(Field):
-    """Class for two dimensional fields."""
+    """Class for two-dimensional fields."""
 
     def __init__(self, x_samples, x_delta, y_samples, y_delta, t_samples, t_delta, material):
         """Class constructor.

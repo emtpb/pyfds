@@ -69,7 +69,7 @@ class Animator:
 
 
 class Animator1D(Animator):
-    """Animator for one dimensional field simulation in pyFDs."""
+    """Animator for one-dimensional field simulation in pyFDs."""
 
     def __init__(self, *args, **kwargs):
         """Class constructor.
@@ -154,7 +154,7 @@ class Animator1D(Animator):
 
 
 class Animator2D(Animator):
-    """Animator for one dimensional field simulation in pyFDs."""
+    """Animator for two-dimensional field simulation in pyFDs."""
 
     def __init__(self, *args, **kwargs):
         """Class constructor.

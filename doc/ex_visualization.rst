@@ -1,7 +1,7 @@
 Visualization
 =============
 
-Visualizing one dimensional simulations
+Visualizing one-dimensional simulations
 ---------------------------------------
 
 .. code-block:: python
@@ -40,7 +40,7 @@ Visualizing one dimensional simulations
         anim.start_simulation()
 
 
-Visualizing two dimensional simulations
+Visualizing two-dimensional simulations
 ---------------------------------------
 
 .. code-block:: python

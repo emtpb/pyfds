@@ -1,7 +1,7 @@
 Acoustic field simulation
 =========================
 
-One dimensional acoustic simulation
+One-dimensional acoustic simulation
 -----------------------------------
 
 .. code-block:: python
