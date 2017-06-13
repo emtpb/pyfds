@@ -77,9 +77,9 @@ Simulating a short, circular acoustic waveguide.
         fld.velocity_x.boundaries.append(fds.Boundary(
             fld.get_line_region((200e-3, 0, 200e-3, max(fld.y.vector)))))
 
-        # add excitation signal as boundary (do not excite at r=0 in axial symmetric setups)
+        # add excitation signal as boundary
         fld.pressure.boundaries.append(fds.Boundary(
-            fld.get_line_region((1e-3, 200e-3, 199e-3, 200e-3)),
+            fld.get_line_region((0, 200e-3, 199e-3, 200e-3)),
             value=ex_signal, additive=True))
 
         # add output positions
