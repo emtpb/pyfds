@@ -3,8 +3,18 @@ Welcome to pyFDs's documentation!
 
 Version: |version| (|today|)
 
-Contents
---------
+Manual
+------
+
+.. toctree::
+    :maxdepth: 2
+
+    usage
+    examples
+
+
+API
+---
 
 .. toctree::
     :maxdepth: 1
@@ -14,12 +24,6 @@ Contents
     acoustics
     nonlinear_acoustics
     gfx
-
-.. toctree::
-    :maxdepth: 2
-
-    examples
-
 
 Indices and tables
 ------------------
