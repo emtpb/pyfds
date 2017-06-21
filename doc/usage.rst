@@ -196,6 +196,4 @@ visualization you have to start the simulation from the animator object by calli
 
     animator.start_simulation()
 
-A matplotlib window should then open, displaying the field distribution. As the simulation
-process is separate from the animation process, the outputs of the field object stay empty as of
-now.
+A matplotlib window should then open, displaying the field distribution. 
