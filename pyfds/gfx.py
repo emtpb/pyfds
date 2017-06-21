@@ -64,8 +64,20 @@ class Animator:
             queue.put((self.field.t.vector[self.field.step],
                        getattr(self.field, self.observed_component).values))
 
-        # put None when simulation finishes
-        queue.put(None)
+        # return field when simulation finishes to get output signals
+        queue.put(self.field)
+
+    def _update_components(self, message):
+        """Function to be called when simulation process finished to update the field components 
+        the main process including the output signals
+        
+        Args:
+            message: Field object returned by the simulation process.
+        """
+
+        for name in dir(self.field):
+            if type(getattr(self.field, name)) == fld.FieldComponent:
+                setattr(self.field, name, getattr(message, name))
 
 
 class Animator1D(Animator):
@@ -139,8 +151,10 @@ class Animator1D(Animator):
                 pl.pause(0.01)
 
             message = self._plot_queue.get()
-            # simulation function sends None when simulation is complete
-            if message is None:
+            # simulation function returns field object when simulation is complete to get output
+            if isinstance(message, fld.Field):
+                # update main process field components with simulation result
+                self._update_components(message)
                 finished = True
             else:
                 time, data = message
@@ -150,6 +164,7 @@ class Animator1D(Animator):
                 main_plot.set_data(self.field.x.vector / self._x_axis_factor, data)
                 pl.pause(self.frame_delay)
 
+        sim_process.join()
         pp.show()
 
 
@@ -255,8 +270,10 @@ class Animator2D(Animator):
                 pl.pause(0.01)
 
             message = self._plot_queue.get()
-            # simulation function sends None when simulation is complete
-            if message is None:
+            # simulation function returns field object when simulation is complete to get output
+            if isinstance(message, fld.Field):
+                # update main process field components with simulation result
+                self._update_components(message)
                 finished = True
             else:
                 time, data = message
@@ -266,6 +283,7 @@ class Animator2D(Animator):
                 main_plot.set_data(self.field_as_matrix(data))
                 pl.pause(self.frame_delay)
 
+        sim_process.join()
         pp.show()
 
 
