@@ -278,7 +278,8 @@ class AcousticMaterial:
 
     def __init__(self, sound_velocity, density,
                  shear_viscosity=0, bulk_viscosity=0,
-                 thermal_conductivity=0, isobaric_heat_cap=1, isochoric_heat_cap=1):
+                 thermal_conductivity=0, isobaric_heat_cap=1, isochoric_heat_cap=1,
+                 absorption_coef=None):
         """Class constructor. Default values for optional parameters create lossless medium.
 
         Args:
@@ -289,6 +290,10 @@ class AcousticMaterial:
             thermal_conductivity: Thermal conductivity coefficient.
             isobaric_heat_cap: Isobaric heat capacitance (at constant pressure).
             isochoric_heat_cap: Isochoric heat capacitance (at constant volume).
+            absorption_coef: Sum of losses (4/3 * shear_viscosity + bulk_viscosity + 
+                thermal_conductivity * (isobaric_heat_cap - isochoric_heat_cap) /
+                (isobaric_heat_cap * isochoric_heat_cap)). If set, the given value is used 
+                directly instead of calculating if from the other properties.
         """
 
         self.sound_velocity = sound_velocity
@@ -298,12 +303,20 @@ class AcousticMaterial:
         self.thermal_conductivity = thermal_conductivity
         self.isobaric_heat_cap = isobaric_heat_cap
         self.isochoric_heat_cap = isochoric_heat_cap
+        self._absorption_coef = absorption_coef
 
     @property
     def absorption_coef(self):
         """Returns a helper variable (called mu in publications by L. Claes) that sums up all
         losses into a single quantity."""
 
-        return (4/3 * self.shear_viscosity + self.bulk_viscosity + self.thermal_conductivity *
-                (self.isobaric_heat_cap - self.isochoric_heat_cap) /
-                (self.isobaric_heat_cap * self.isochoric_heat_cap))
+        if not self._absorption_coef:
+            return (4/3 * self.shear_viscosity + self.bulk_viscosity + self.thermal_conductivity *
+                    (self.isobaric_heat_cap - self.isochoric_heat_cap) /
+                    (self.isobaric_heat_cap * self.isochoric_heat_cap))
+        else:
+            return self._absorption_coef
+
+    @absorption_coef.setter
+    def absorption_coef(self, value):
+        self._absorption_coef = value
