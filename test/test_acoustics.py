@@ -7,6 +7,13 @@ def test_acoustic_material():
     water.bulk_viscosity = 1e-3
     water.shear_viscosity = 1e-3
     assert np.isclose(water.absorption_coef, 7e-3 / 3)
+    water.absorption_coef = 3e-3
+    assert np.isclose(water.absorption_coef, 3e-3)
+
+
+def test_acoustic_material_absorption_coef():
+    water = fds.AcousticMaterial(1500, 1000, absorption_coef=2e-3)
+    assert np.isclose(water.absorption_coef, 2e-3)
 
 
 def test_acoustic1d_create_matrices():
