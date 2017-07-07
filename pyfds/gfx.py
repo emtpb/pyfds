@@ -111,12 +111,16 @@ class Animator1D(Animator):
         else:
             raise TypeError('Unknown type in region list: {}'.format(type(region)))
 
-    def start_simulation(self):
-        """Starts the simulation with visualization."""
+    def show_setup(self, halt=True):
+        """Open a plot window that shows the simulation setup including boundaries, outputs and 
+        material regions.
+        
+        Args:
+            halt: Halt script execution until plot window is closed.
+        """
 
         pp.figure()
         self.axes = pp.gca()
-        main_plot, = self.axes.plot([])
         self.axes.set_xlim(0, max(self.field.x.vector) / self._x_axis_factor)
         self.axes.set_ylim(-self.scale, self.scale)
         self.axes.set_xlabel('{0} / {1}m'.format(self.x_label, self._x_axis_prefix))
@@ -136,6 +140,15 @@ class Animator1D(Animator):
             for name, component in self.field_components.items():
                 for output in component.outputs:
                     self.plot_region(output.region)
+
+        if halt:
+            pp.show()
+
+    def start_simulation(self):
+        """Starts the simulation with visualization."""
+
+        self.show_setup(halt=False)
+        main_plot, = self.axes.plot([])
 
         sim_process = mp.Process(target=self._sim_function, args=(self._plot_queue,))
         sim_process.start()
