@@ -238,22 +238,20 @@ class Animator2D(Animator):
 
         return np.reshape(component, (self.field.y.samples, self.field.x.samples))
 
-    def start_simulation(self):
-        """Starts the simulation with visualization."""
+    def show_setup(self, halt=True):
+        """Open a plot window that shows the simulation setup including boundaries, outputs and 
+        material regions.
+
+        Args:
+            halt: Halt script execution until plot window is closed.
+        """
 
         pp.figure()
         self.axes = pp.gca()
-        main_plot = self.axes.imshow(self.field_as_matrix(),
-                                     extent=(0, max(self.field.x.vector) / self._x_axis_factor,
-                                             max(self.field.y.vector) / self._y_axis_factor, 0),
-                                     cmap='viridis')
         self.axes.set_xlim(0, max(self.field.x.vector) / self._x_axis_factor)
         self.axes.set_ylim(0, max(self.field.y.vector) / self._y_axis_factor)
         self.axes.set_xlabel('{0} / {1}m'.format(self.x_label, self._x_axis_prefix))
         self.axes.set_ylabel('{0} / {1}m'.format(self.y_label, self._y_axis_prefix))
-        main_plot.set_clim(-self.scale, self.scale)
-        color_bar = pp.colorbar(main_plot)
-        color_bar.set_label(self.observed_component, rotation=270)
 
         if self.show_materials:
             for mat_region in self.field.material_regions:
@@ -268,6 +266,21 @@ class Animator2D(Animator):
             for name, component in self.field_components.items():
                 for output in component.outputs:
                     self.plot_region(output.region)
+
+        if halt:
+            pp.show()
+
+    def start_simulation(self):
+        """Starts the simulation with visualization."""
+
+        self.show_setup(halt=False)
+        main_plot = self.axes.imshow(self.field_as_matrix(),
+                                     extent=(0, max(self.field.x.vector) / self._x_axis_factor,
+                                             max(self.field.y.vector) / self._y_axis_factor, 0),
+                                     cmap='viridis')
+        main_plot.set_clim(-self.scale, self.scale)
+        color_bar = pp.colorbar(main_plot)
+        color_bar.set_label(self.observed_component, rotation=270)
 
         sim_process = mp.Process(target=self._sim_function, args=(self._plot_queue,))
         sim_process.start()
