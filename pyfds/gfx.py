@@ -248,6 +248,7 @@ class Animator2D(Animator):
 
         pp.figure()
         self.axes = pp.gca()
+        pp.axis('equal')
         self.axes.set_xlim(0, max(self.field.x.vector) / self._x_axis_factor)
         self.axes.set_ylim(0, max(self.field.y.vector) / self._y_axis_factor)
         self.axes.set_xlabel('{0} / {1}m'.format(self.x_label, self._x_axis_prefix))
