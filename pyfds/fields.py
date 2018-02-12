@@ -1,7 +1,10 @@
+import logging as lo
 import numpy as np
 import scipy.sparse as sp
 import warnings as wn
 from . import regions as reg
+
+logger = lo.getLogger('pyfds')
 
 
 class Field:
@@ -50,6 +53,9 @@ class Field:
         if not param_found:
             wn.warn('Material parameter {} not found in set materials. Returning zeros.'
                     .format(mat_parameter), stacklevel=2)
+            logger.warning(
+                'Material parameter {} not found in set materials. Returning zeros.'
+                .format(mat_parameter))
 
         return mat_vector
 
@@ -75,6 +81,7 @@ class Field:
 
         new_material_region = reg.MaterialRegion(*args, **kwargs)
         self.material_regions.append(new_material_region)
+        logger.info('Material region {} added.'.format(new_material_region.region.name))
 
 
 class Field1D(Field):
@@ -477,6 +484,7 @@ class FieldComponent:
 
         new_bound = reg.Boundary(*args, **kwargs)
         self.boundaries.append(new_bound)
+        logger.info('Boundary {} added.'.format(new_bound.region.name))
 
     def add_output(self, *args, **kwargs):
         """Adds output to the field component.
@@ -487,3 +495,4 @@ class FieldComponent:
 
         new_output = reg.Output(*args, **kwargs)
         self.outputs.append(new_output)
+        logger.info('Output region {} added.'.format(new_output.region.name))
