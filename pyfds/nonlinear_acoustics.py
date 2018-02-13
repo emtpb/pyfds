@@ -40,6 +40,7 @@ class IdealGas1D(fld.Field1D):
                                         self.material_vector('absorption_coef')))
         self.a_v_v2 = self.d_x(factors=(self.t.increment / self.x.increment / 2) *
                                np.ones(self.x.samples), variant='central')
+        fld.logger.info('Matrices created.')
 
     def simulate(self, num_steps=None):
         """Starts the simulation.
@@ -50,6 +51,10 @@ class IdealGas1D(fld.Field1D):
 
         if not num_steps:
             num_steps = self.t.samples
+            # log progress only if simulation run in not segmented
+            progress_logger = fld.ProgressLogger(num_steps)
+        else:
+            progress_logger = None
 
         # create a_* matrices if create_matrices was not called before
         if self.a_d_v is None or self.a_v_p is None or self.a_v_v is None or self.a_v_v2 is None:
@@ -61,6 +66,7 @@ class IdealGas1D(fld.Field1D):
         heat_cap_ratio = (self.material_vector('isobaric_heat_cap') /
                           self.material_vector('isochoric_heat_cap'))
 
+        fld.logger.info('Starting simulation of {} steps.'.format(num_steps))
         start_step = self.step
         for self.step in range(start_step, start_step + num_steps):
 
@@ -94,6 +100,11 @@ class IdealGas1D(fld.Field1D):
                     (((density + self.density.values) / density)**heat_cap_ratio - 1)
             else:
                 self.pressure.values = sound_velocity**2 * self.density.values
+
+            if progress_logger:
+                progress_logger.log(self.step)
+
+        fld.logger.info('Simulation of {} steps completed.'.format(num_steps))
 
     def is_stable(self):
         """Checks if simulation satisfies stability conditions. Does not account for instability
@@ -133,6 +144,10 @@ class Acoustic2ndOrder1D(IdealGas1D):
 
         if not num_steps:
             num_steps = self.t.samples
+            # log progress only if simulation run in not segmented
+            progress_logger = fld.ProgressLogger(num_steps)
+        else:
+            progress_logger = None
 
         # create a_* matrices if create_matrices was not called before
         if self.a_d_v is None or self.a_v_p is None or self.a_v_v is None or self.a_v_v2 is None:
@@ -143,6 +158,7 @@ class Acoustic2ndOrder1D(IdealGas1D):
         d_rho_p = self.material_vector('d_rho_p')
         d_rho2_p = self.material_vector('d_rho2_p')
 
+        fld.logger.info('Starting simulation of {} steps.'.format(num_steps))
         start_step = self.step
         for self.step in range(start_step, start_step + num_steps):
 
@@ -166,6 +182,11 @@ class Acoustic2ndOrder1D(IdealGas1D):
 
             self.pressure.values = d_rho_p * self.density.values + \
                 d_rho2_p / 2 * self.density.values**2
+
+            if progress_logger:
+                progress_logger.log(self.step)
+
+        fld.logger.info('Simulation of {} steps completed.'.format(num_steps))
 
 
 class AcousticMaterial2ndOrder(ac.AcousticMaterial):
