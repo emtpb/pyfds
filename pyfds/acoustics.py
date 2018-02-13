@@ -31,6 +31,7 @@ class Acoustic1D(fld.Field1D):
         self.a_v_v = self.d_x2(factors=(self.t.increment / self.x.increment ** 2 *
                                         self.material_vector('absorption_coef') /
                                         self.material_vector('density')))
+        fld.logger.info('Matrices created.')
 
     def simulate(self, num_steps=None):
         """Starts the simulation.
@@ -41,10 +42,16 @@ class Acoustic1D(fld.Field1D):
 
         if not num_steps:
             num_steps = self.t.samples
+            # log progress only if simulation run in not segmented
+            progress_logger = fld.ProgressLogger(num_steps)
+        else:
+            progress_logger = None
 
         # create a_* matrices if create_matrices was not called before
         if self.a_p_v is None or self.a_v_p is None or self.a_v_v is None:
             self.create_matrices()
+
+        fld.logger.info('Starting simulation of {} steps.'.format(num_steps))
 
         start_step = self.step
         for self.step in range(start_step, start_step + num_steps):
@@ -59,6 +66,11 @@ class Acoustic1D(fld.Field1D):
             self.velocity.write_outputs()
 
             self.pressure.values -= self.a_p_v.dot(self.velocity.values)
+
+            if progress_logger:
+                progress_logger.log(self.step)
+
+        fld.logger.info('Simulation of {} steps completed.'.format(num_steps))
 
     def is_stable(self):
         """Checks if simulation satisfies stability conditions. Does not account for instability
