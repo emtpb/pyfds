@@ -127,6 +127,7 @@ class Acoustic2D(fld.Field2D):
                                            self.material_vector('absorption_coef') /
                                            self.material_vector('density')))).todia()
         self.a_vy_vy = self.a_vx_vx
+        fld.logger.info('Matrices created.')
 
     def simulate(self, num_steps=None):
         """Starts the simulation.
@@ -137,12 +138,17 @@ class Acoustic2D(fld.Field2D):
 
         if not num_steps:
             num_steps = self.t.samples
+            # log progress only if simulation run in not segmented
+            progress_logger = fld.ProgressLogger(num_steps)
+        else:
+            progress_logger = None
 
         # create a_* matrices if create_matrices was not called before
         if self.a_p_vx is None or self.a_p_vy is None or self.a_vx_p is None or \
            self.a_vy_p is None or self.a_vx_vx is None or self.a_vy_vy is None:
             self.create_matrices()
 
+        fld.logger.info('Starting simulation of {} steps.'.format(num_steps))
         start_step = self.step
         for self.step in range(start_step, start_step + num_steps):
 
@@ -161,6 +167,11 @@ class Acoustic2D(fld.Field2D):
 
             self.pressure.values -= (self.a_p_vx.dot(self.velocity_x.values) +
                                      self.a_p_vy.dot(self.velocity_y.values))
+
+            if progress_logger:
+                progress_logger.log(self.step)
+
+        fld.logger.info('Simulation of {} steps completed.'.format(num_steps))
 
     def is_stable(self):
         """Checks if simulation satisfies stability conditions. Does not account for instability
@@ -235,6 +246,7 @@ class Acoustic3DAxi(fld.Field2D):
                                           self.material_vector('density') / self._radii()),
                                  variant='central')).todia()
         self.a_vy_vy = self.a_vx_vx
+        fld.logger.info('Matrices created.')
 
     def simulate(self, num_steps=None):
         """Starts the simulation.
@@ -245,12 +257,17 @@ class Acoustic3DAxi(fld.Field2D):
 
         if not num_steps:
             num_steps = self.t.samples
+            # log progress only if simulation run in not segmented
+            progress_logger = fld.ProgressLogger(num_steps)
+        else:
+            progress_logger = None
 
         # create a_* matrices if create_matrices was not called before
         if self.a_p_vx is None or self.a_p_vy is None or self.a_vx_p is None or \
            self.a_vy_p is None or self.a_vx_vx is None or self.a_vy_vy is None:
             self.create_matrices()
 
+        fld.logger.info('Starting simulation of {} steps.'.format(num_steps))
         start_step = self.step
         for self.step in range(start_step, start_step + num_steps):
 
@@ -272,6 +289,11 @@ class Acoustic3DAxi(fld.Field2D):
 
             self.pressure.values -= (self.a_p_vx.dot(self.velocity_x.values * self._radii()) +
                                      self.a_p_vy.dot(self.velocity_y.values))
+
+            if progress_logger:
+                progress_logger.log(self.step)
+
+        fld.logger.info('Simulation of {} steps completed.'.format(num_steps))
 
     def is_stable(self):
         """Checks if simulation satisfies stability conditions. Does not account for instability
