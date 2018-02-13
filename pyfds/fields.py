@@ -496,3 +496,38 @@ class FieldComponent:
         new_output = reg.Output(*args, **kwargs)
         self.outputs.append(new_output)
         logger.info('Output region {} added.'.format(new_output.region.name))
+
+
+class ProgressLogger:
+    """Class to easily log progress in percentage without double messages and at a specified
+    increment."""
+
+    def __init__(self, num_steps, log_increment=5, logger_instance=None):
+        """Class constructor.
+
+        Args:
+            num_steps: Number of step for the simulation to complete.
+            log_increment: Increment in percent at which messages are to be send. Defaults to 5.
+            logger_instance: Logger to log to. Defaults to module level logger.
+        """
+        self.num_steps = num_steps
+        self.log_increment = log_increment
+        if not logger_instance:
+            self.logger = logger
+        else:
+            self.logger = logger_instance
+        self._last_message_at = None
+
+    def log(self, current_step):
+        """Check if the simulation cleared another log increment and send a log message
+        accordingly.
+
+        Args:
+            current_step: Current step of the simulation.
+        """
+
+        if int(current_step / self.num_steps * 100 % self.log_increment) == 0 and \
+                self._last_message_at is not int(current_step / self.num_steps * 100):
+            self.logger.info('Simulating. {} % completed.'
+                             .format(int(current_step / self.num_steps * 100)))
+            self._last_message_at = int(current_step / self.num_steps * 100)
