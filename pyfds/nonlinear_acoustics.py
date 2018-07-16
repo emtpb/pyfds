@@ -97,7 +97,7 @@ class IdealGas1D(fld.Field1D):
                       0.99 * self.x.increment / self.t.increment)
 
 
-class Acoustic2ndOrder1D(IdealGas1D):
+class Acoustic2ndOrder1D(fld.Field1D):
     """Class for simulation of one-dimensional nonlinear acoustic fields using second order 
     approximation."""
 
@@ -114,58 +114,58 @@ class Acoustic2ndOrder1D(IdealGas1D):
                     'nonlinear acoustic simulation.')
         super().__init__(*args, **kwargs)
 
-    def simulate(self, num_steps=None):
-        """Starts the simulation.
+        self.pressure = fld.FieldComponent(self.num_points)
+        self.velocity = fld.FieldComponent(self.num_points)
+        self.density = fld.FieldComponent(self.num_points)
 
-        Args:
-            num_steps: Number of steps to simulate (self.t.samples by default).
-        """
+        # initialize attributes sparse matrices and buffered material parameters
+        self.a_d_v = None
+        self.a_v_p = None
+        self.a_v_v = None
+        self.a_v_v2 = None
+        self.stat_density = None
+        self.d_rho_p = None
+        self.d_rho2_p = None
 
-        if not num_steps:
-            num_steps = self.t.samples
-            # log progress only if simulation run in not segmented
-            progress_logger = fld.ProgressLogger(num_steps)
-        else:
-            progress_logger = None
+    def assemble_matrices(self):
+        """Assemble the a_* matrices and buffer material parameters required for simulation."""
 
-        # create a_* matrices if create_matrices was not called before
-        if self.a_d_v is None or self.a_v_p is None or self.a_v_v is None or self.a_v_v2 is None:
-            self.create_matrices()
+        self.a_d_v = self.d_x(factors=(self.t.increment / self.x.increment *
+                                       np.ones(self.x.samples)))
+        self.a_v_p = self.d_x(factors=(self.t.increment / self.x.increment) *
+                              np.ones(self.x.samples), variant='backward')
+        self.a_v_v = self.d_x2(factors=(self.t.increment / self.x.increment ** 2 *
+                                        self.material_vector('absorption_coef')))
+        self.a_v_v2 = self.d_x(factors=(self.t.increment / self.x.increment / 2) *
+                               np.ones(self.x.samples), variant='central')
+        self.stat_density = self.material_vector('density')
+        self.d_rho_p = self.material_vector('d_rho_p')
+        self.d_rho2_p = self.material_vector('d_rho2_p')
+        self.matrices_assembled = True
 
-        # buffer material vectors for better performance
-        density = self.material_vector('density')
-        d_rho_p = self.material_vector('d_rho_p')
-        d_rho2_p = self.material_vector('d_rho2_p')
+    def sim_step(self):
+        """Simulate one step."""
 
-        fld.logger.info('Starting simulation of {} steps.'.format(num_steps))
-        start_step = self.step
-        for self.step in range(start_step, start_step + num_steps):
+        self.pressure.apply_bounds(self.step)
+        self.pressure.write_outputs()
 
-            self.pressure.apply_bounds(self.step)
-            self.pressure.write_outputs()
+        self.velocity.values -= (self.a_v_p.dot(self.pressure.values) /
+                                 (self.stat_density + self.density.values) +
+                                 self.a_v_v2.dot(self.velocity.values) -
+                                 self.a_v_v.dot(self.velocity.values) /
+                                 (self.stat_density + self.density.values))
 
-            self.velocity.values -= (self.a_v_p.dot(self.pressure.values) /
-                                     (density + self.density.values) +
-                                     self.a_v_v2.dot(self.velocity.values) -
-                                     self.a_v_v.dot(self.velocity.values) /
-                                     (density + self.density.values))
+        self.velocity.apply_bounds(self.step)
+        self.velocity.write_outputs()
 
-            self.velocity.apply_bounds(self.step)
-            self.velocity.write_outputs()
+        self.density.values -= self.a_d_v.dot((self.density.values + self.stat_density) *
+                                              self.velocity.values)
 
-            self.density.values -= self.a_d_v.dot((self.density.values + density) *
-                                                  self.velocity.values)
+        self.density.apply_bounds(self.step)
+        self.density.write_outputs()
 
-            self.density.apply_bounds(self.step)
-            self.density.write_outputs()
-
-            self.pressure.values = d_rho_p * self.density.values + \
-                d_rho2_p / 2 * self.density.values**2
-
-            if progress_logger:
-                progress_logger.log(self.step)
-
-        fld.logger.info('Simulation of {} steps completed.'.format(num_steps))
+        self.pressure.values = self.d_rho_p * self.density.values + \
+            self.d_rho2_p / 2 * self.density.values**2
 
 
 class AcousticMaterial2ndOrder(ac.AcousticMaterial):
