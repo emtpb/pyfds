@@ -23,14 +23,17 @@ class IdealGas1D(fld.Field1D):
         self.velocity = fld.FieldComponent(self.num_points)
         self.density = fld.FieldComponent(self.num_points)
 
-        # initialize attributes sparse matrices
+        # initialize attributes sparse matrices and buffered material parameters
         self.a_d_v = None
         self.a_v_p = None
         self.a_v_v = None
         self.a_v_v2 = None
+        self.stat_density = None
+        self.sound_velocity = None
+        self.heat_cap_ratio = None
 
-    def create_matrices(self):
-        """Creates the a_* matrices required for simulation."""
+    def assemble_matrices(self):
+        """Assemble the a_* matrices and buffer material parameters required for simulation."""
 
         self.a_d_v = self.d_x(factors=(self.t.increment / self.x.increment *
                                        np.ones(self.x.samples)))
@@ -40,71 +43,47 @@ class IdealGas1D(fld.Field1D):
                                         self.material_vector('absorption_coef')))
         self.a_v_v2 = self.d_x(factors=(self.t.increment / self.x.increment / 2) *
                                np.ones(self.x.samples), variant='central')
-        fld.logger.info('Matrices created.')
+        self.stat_density = self.material_vector('density')
+        self.sound_velocity = self.material_vector('sound_velocity')
+        self.heat_cap_ratio = (self.material_vector('isobaric_heat_cap') /
+                               self.material_vector('isochoric_heat_cap'))
+        self.matrices_assembled = True
 
-    def simulate(self, num_steps=None):
-        """Starts the simulation.
+    def sim_step(self):
+        """Simulate one step."""
 
-        Args:
-            num_steps: Number of steps to simulate (self.t.samples by default).
-        """
+        self.pressure.apply_bounds(self.step)
+        self.pressure.write_outputs()
 
-        if not num_steps:
-            num_steps = self.t.samples
-            # log progress only if simulation run in not segmented
-            progress_logger = fld.ProgressLogger(num_steps)
+        if self.convective:
+            self.velocity.values -= (self.a_v_p.dot(self.pressure.values) /
+                                     (self.stat_density + self.density.values) +
+                                     self.a_v_v2.dot(self.velocity.values) -
+                                     self.a_v_v.dot(self.velocity.values) /
+                                     (self.stat_density + self.density.values))
         else:
-            progress_logger = None
+            self.velocity.values -= (self.a_v_p.dot(self.pressure.values) /
+                                     (self.stat_density + self.density.values) -
+                                     self.a_v_v.dot(self.velocity.values) /
+                                     (self.stat_density + self.density.values))
 
-        # create a_* matrices if create_matrices was not called before
-        if self.a_d_v is None or self.a_v_p is None or self.a_v_v is None or self.a_v_v2 is None:
-            self.create_matrices()
+        self.velocity.apply_bounds(self.step)
+        self.velocity.write_outputs()
 
-        # buffer static density and pressure, heat capacity ratio for easier access
-        density = self.material_vector('density')
-        sound_velocity = self.material_vector('sound_velocity')
-        heat_cap_ratio = (self.material_vector('isobaric_heat_cap') /
-                          self.material_vector('isochoric_heat_cap'))
+        self.density.values -= self.a_d_v.dot((self.density.values + self.stat_density) *
+                                              self.velocity.values)
 
-        fld.logger.info('Starting simulation of {} steps.'.format(num_steps))
-        start_step = self.step
-        for self.step in range(start_step, start_step + num_steps):
+        self.density.apply_bounds(self.step)
+        self.density.write_outputs()
 
-            self.pressure.apply_bounds(self.step)
-            self.pressure.write_outputs()
-
-            if self.convective:
-                self.velocity.values -= (self.a_v_p.dot(self.pressure.values) /
-                                         (density + self.density.values) +
-                                         self.a_v_v2.dot(self.velocity.values) -
-                                         self.a_v_v.dot(self.velocity.values) /
-                                         (density + self.density.values))
-            else:
-                self.velocity.values -= (self.a_v_p.dot(self.pressure.values) /
-                                         (density + self.density.values) -
-                                         self.a_v_v.dot(self.velocity.values) /
-                                         (density + self.density.values))
-
-            self.velocity.apply_bounds(self.step)
-            self.velocity.write_outputs()
-
-            self.density.values -= self.a_d_v.dot((self.density.values + density) *
-                                                  self.velocity.values)
-
-            self.density.apply_bounds(self.step)
-            self.density.write_outputs()
-
-            if self.nl_state:
-                # using modified equation of state, so static pressure is not required
-                self.pressure.values = density * sound_velocity**2 / heat_cap_ratio * \
-                    (((density + self.density.values) / density)**heat_cap_ratio - 1)
-            else:
-                self.pressure.values = sound_velocity**2 * self.density.values
-
-            if progress_logger:
-                progress_logger.log(self.step)
-
-        fld.logger.info('Simulation of {} steps completed.'.format(num_steps))
+        if self.nl_state:
+            # using modified equation of state, so static pressure is not required
+            self.pressure.values = \
+                self.stat_density * self.sound_velocity**2 / self.heat_cap_ratio * \
+                (((self.stat_density + self.density.values)
+                  / self.stat_density)**self.heat_cap_ratio - 1)
+        else:
+            self.pressure.values = self.sound_velocity**2 * self.density.values
 
     def is_stable(self):
         """Checks if simulation satisfies stability conditions. Does not account for instability
