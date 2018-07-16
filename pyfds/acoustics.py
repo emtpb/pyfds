@@ -82,8 +82,8 @@ class Acoustic2D(fld.Field2D):
         self.a_vx_vx = None
         self.a_vy_vy = None
 
-    def create_matrices(self):
-        """Creates the a_* matrices required for simulation."""
+    def assemble_matrices(self):
+        """Assemble the a_* matrices required for simulation."""
 
         self.a_p_vx = self.d_x(factors=(self.t.increment / self.x.increment *
                                         self.material_vector('sound_velocity') ** 2 *
@@ -102,51 +102,26 @@ class Acoustic2D(fld.Field2D):
                                            self.material_vector('absorption_coef') /
                                            self.material_vector('density')))).todia()
         self.a_vy_vy = self.a_vx_vx
-        fld.logger.info('Matrices created.')
+        self.matrices_assembled = True
 
-    def simulate(self, num_steps=None):
-        """Starts the simulation.
+    def sim_step(self):
+        """Simulate one step."""
 
-        Args:
-            num_steps: Number of steps to simulate (self.t.samples by default).
-        """
+        self.pressure.apply_bounds(self.step)
+        self.pressure.write_outputs()
 
-        if not num_steps:
-            num_steps = self.t.samples
-            # log progress only if simulation run in not segmented
-            progress_logger = fld.ProgressLogger(num_steps)
-        else:
-            progress_logger = None
+        self.velocity_x.values -= (self.a_vx_p.dot(self.pressure.values) -
+                                   self.a_vx_vx.dot(self.velocity_x.values))
+        self.velocity_y.values -= (self.a_vy_p.dot(self.pressure.values) -
+                                   self.a_vy_vy.dot(self.velocity_y.values))
 
-        # create a_* matrices if create_matrices was not called before
-        if self.a_p_vx is None or self.a_p_vy is None or self.a_vx_p is None or \
-           self.a_vy_p is None or self.a_vx_vx is None or self.a_vy_vy is None:
-            self.create_matrices()
+        self.velocity_x.apply_bounds(self.step)
+        self.velocity_x.write_outputs()
+        self.velocity_y.apply_bounds(self.step)
+        self.velocity_y.write_outputs()
 
-        fld.logger.info('Starting simulation of {} steps.'.format(num_steps))
-        start_step = self.step
-        for self.step in range(start_step, start_step + num_steps):
-
-            self.pressure.apply_bounds(self.step)
-            self.pressure.write_outputs()
-
-            self.velocity_x.values -= (self.a_vx_p.dot(self.pressure.values) -
-                                       self.a_vx_vx.dot(self.velocity_x.values))
-            self.velocity_y.values -= (self.a_vy_p.dot(self.pressure.values) -
-                                       self.a_vy_vy.dot(self.velocity_y.values))
-
-            self.velocity_x.apply_bounds(self.step)
-            self.velocity_x.write_outputs()
-            self.velocity_y.apply_bounds(self.step)
-            self.velocity_y.write_outputs()
-
-            self.pressure.values -= (self.a_p_vx.dot(self.velocity_x.values) +
-                                     self.a_p_vy.dot(self.velocity_y.values))
-
-            if progress_logger:
-                progress_logger.log(self.step)
-
-        fld.logger.info('Simulation of {} steps completed.'.format(num_steps))
+        self.pressure.values -= (self.a_p_vx.dot(self.velocity_x.values) +
+                                 self.a_p_vy.dot(self.velocity_y.values))
 
     def is_stable(self):
         """Checks if simulation satisfies stability conditions. Does not account for instability
