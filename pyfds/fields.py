@@ -13,6 +13,8 @@ class Field:
     def __init__(self):
         self.material_regions = []
         self.step = 0
+        self.matrices_assembled = False
+        self.t = None
 
     @property
     def num_points(self):
@@ -58,6 +60,44 @@ class Field:
                 .format(mat_parameter))
 
         return mat_vector
+
+    def assemble_matrices(self):
+        """Assemble the matrices and vectors required for simulation."""
+        raise NotImplementedError
+
+    def sim_step(self):
+        """Simulate one step."""
+        raise NotImplementedError
+
+    def simulate(self, num_steps=None):
+        """Starts the simulation.
+
+        Args:
+            num_steps: Number of steps to simulate (self.t.samples by default).
+        """
+
+        if not num_steps:
+            num_steps = self.t.samples
+            # log progress only if simulation run in not segmented
+            progress_logger = ProgressLogger(num_steps)
+        else:
+            progress_logger = None
+
+        if not self.matrices_assembled:
+            self.assemble_matrices()
+            logger.info('Matrices created.')
+
+        logger.info('Starting simulation of {} steps.'.format(num_steps))
+
+        start_step = self.step
+        for self.step in range(start_step, start_step + num_steps):
+
+            self.sim_step()
+
+            if progress_logger:
+                progress_logger.log(self.step)
+
+        logger.info('Simulation of {} steps completed.'.format(num_steps))
 
     def get_point_region(self, position, name=''):
         """Creates a point region at the given position.
