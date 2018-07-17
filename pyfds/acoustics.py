@@ -33,7 +33,7 @@ class Acoustic1D(fld.Field1D):
                                         self.material_vector('density')))
         self.matrices_assembled = True
 
-    def sim_step(self, num_steps=None):
+    def sim_step(self):
         """Simulate one step."""
 
         self.pressure.apply_bounds(self.step)
