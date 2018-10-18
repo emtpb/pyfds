@@ -2,6 +2,7 @@ import matplotlib.patches as pa
 import matplotlib.pyplot as pp
 import multiprocessing as mp
 import numpy as np
+import os
 import pylab as pl
 from . import fields as fld
 from . import regions as reg
@@ -11,7 +12,7 @@ class Animator:
     """Base class for pyFDs' live field animation during simulation."""
 
     def __init__(self, field, observed_component=None, steps_per_frame=10, scale=1,
-                 frame_delay=1e-2):
+                 frame_delay=1e-2, save_video=False, video_file_name='pyfds_vid.mp4'):
         """Class constructor.
 
         Args:
@@ -20,6 +21,8 @@ class Animator:
             steps_per_frame: Simulation steps between updates of the animation.
             scale: Scale of the animation.
             frame_delay: Delay between animation updates.
+            save_video: Save animation as video (requires ffmpeg).
+            video_name: File name for the video.
         """
 
         self.field = field
@@ -37,6 +40,12 @@ class Animator:
         self.steps_per_frame = int(steps_per_frame)
         self.scale = scale
         self.frame_delay = frame_delay
+        self.save_video = save_video
+        self.video_file_name = video_file_name
+        self.image_files = []
+        self.ffmpeg_path = 'ffmpeg'
+        self.video_fps = 30
+        self.video_dpi = 100
 
         self.show_boundaries = True
         self.show_materials = True
@@ -78,6 +87,34 @@ class Animator:
         for name in dir(self.field):
             if type(getattr(self.field, name)) == fld.FieldComponent:
                 setattr(self.field, name, getattr(message, name))
+
+    def _save_frame(self):
+        """Save current frame of animation to a png file for video creation."""
+
+        file_name = 'frame{0:06d}.png'.format(len(self.image_files))
+        pl.savefig(file_name, dpi=self.video_dpi)
+        self.image_files.append(file_name)
+
+    def _create_video(self):
+        """Create video file from saved png files."""
+
+        answer = None
+        if os.path.isfile(self.video_file_name):
+            answer = input('File {} already exists. Overwrite? [y/N]'.format(self.video_file_name))
+            if answer.capitalize() == 'Y':
+                os.remove(self.video_file_name)
+
+        if not answer or answer.capitalize() == 'Y':
+            # video codec requires the image size to be dividable by 2. Numbers (6.4 and 4.78)
+            # result from matplotlibs standard figure size.
+            width = int((self.video_dpi * 6.4)//2 * 2)
+            height = int((self.video_dpi * 4.78)//2 * 2)
+            os.system('{} -loglevel error -framerate {} -i frame%06d.png -pix_fmt yuv420p -vf '
+                      'scale={}:{} {}'.format(self.ffmpeg_path, self.video_fps, width, height,
+                                              self.video_file_name))
+
+        for file in self.image_files:
+            os.remove(file)
 
 
 class Animator1D(Animator):
@@ -176,8 +213,11 @@ class Animator1D(Animator):
                                                  prec=self.time_precision, prefix=self._t_prefix))
                 main_plot.set_data(self.field.x.vector / self._x_axis_factor, data)
                 pl.pause(self.frame_delay)
+                self._save_frame()
 
         sim_process.join()
+        if self.save_video:
+            self._create_video()
         pp.show()
 
 
@@ -309,8 +349,11 @@ class Animator2D(Animator):
                                                  prec=self.time_precision, prefix=self._t_prefix))
                 main_plot.set_data(self.field_as_matrix(data))
                 pl.pause(self.frame_delay)
+                self._save_frame()
 
         sim_process.join()
+        if self.save_video:
+            self._create_video()
         pp.show()
 
 
