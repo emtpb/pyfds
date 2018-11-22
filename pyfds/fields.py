@@ -419,7 +419,7 @@ class Field2D(Field):
         inclusive, origin is the lower left corner.
 
         Args:
-            position: Position of the rectangular region origin_x, origin_y, size_x, size_y).
+            position: Position of the rectangular region (origin_x, origin_y, size_x, size_y).
             name: Name of the region.
 
         Returns:
