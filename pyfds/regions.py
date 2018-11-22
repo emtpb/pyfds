@@ -65,6 +65,22 @@ class RectRegion(Region):
         self.rect_coordinates = coordinates
 
 
+class TriRegion(Region):
+    """Region specified by a triangular field of points."""
+
+    def __init__(self, indices, coordinates, name=''):
+        """Class constructor.
+
+        Args:
+            indices: Point indices of the region.
+            coordinates: Coordinates of the region.
+            name: Name of the region.
+        """
+
+        super().__init__(indices, name)
+        self.tri_coordinates = coordinates
+
+
 class Boundary:
     """Specifies values that are to be written to a FieldComponent after each simulation step
     (like excitation signals and fixed boundaries)."""
