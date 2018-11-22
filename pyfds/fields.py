@@ -437,6 +437,67 @@ class Field2D(Field):
         return reg.RectRegion([x + y * self.x.samples for x in range(x_start, x_end + 1)
                                for y in range(y_start, y_end + 1)], position, name)
 
+    def get_tri_region(self, position, name=''):
+        """Creates a triangular region at the given position (point0_x, point0_y, point1_x,
+        point1_y, point2_x, point2_y), inclusive.
+
+        Args:
+            position: Position of the rectangular region (point0_x, point0_y, point1_x,
+                point1_y, point2_x, point2_y).
+            name: Name of the region.
+
+        Returns:
+            Triangular region.
+        """
+
+        # make sure points are in clockwise order via partial cross product
+        if (position[2] - position[0]) * (position[5] - position[1]) - \
+                (position[3] - position[1]) * (position[4] - position[0]) > 0:
+            position = (position[0], position[1],
+                        position[4], position[5],
+                        position[2], position[3])
+
+        def edge_01(coordinates):
+            """Edge function between points 0 and 1.
+
+            Returns:
+                <0 if supplied coordinates are right of edge;
+                0 if supplied coordinates on the edge;
+                >0 if supplied coordinates are left of edge.
+            """
+            return (coordinates[0] - position[0]) * (position[3] - position[1]) - \
+                   (coordinates[1] - position[1]) * (position[2] - position[0])
+
+        def edge_12(coordinates):
+            """Edge function between points 1 and 2.
+
+            Returns:
+                See edge_01.
+            """
+            return (coordinates[0] - position[2]) * (position[5] - position[3]) - \
+                   (coordinates[1] - position[3]) * (position[4] - position[2])
+
+        def edge_20(coordinates):
+            """Edge function between points 1 and 2.
+
+            Returns:
+                See edge_01.
+            """
+            return (coordinates[0] - position[4]) * (position[1] - position[5]) - \
+                   (coordinates[1] - position[5]) * (position[0] - position[4])
+
+        point_indices = (self.get_index(position[:2]),
+                         self.get_index(position[2:4]),
+                         self.get_index(position[4:]))
+
+        inside_indices = []
+        for ii in range(min(point_indices), max(point_indices)+1):
+            point = self.get_position(ii)
+            if edge_01(point) >= 0 and edge_12(point) >= 0 and edge_20(point) >= 0:
+                inside_indices.append(ii)
+
+        return reg.TriRegion(inside_indices, position, name)
+
 
 class Dimension:
     """Represents a space or time axis."""
