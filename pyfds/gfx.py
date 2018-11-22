@@ -260,6 +260,15 @@ class Animator2D(Animator):
                                              region.rect_coordinates[2] / self._x_axis_factor,
                                              region.rect_coordinates[3] / self._y_axis_factor,
                                              fill=False))
+        elif type(region) == reg.TriRegion:
+            self.axes.add_patch(pa.Polygon(
+                np.array([[region.tri_coordinates[0] / self._x_axis_factor,
+                           region.tri_coordinates[1] / self._y_axis_factor],
+                          [region.tri_coordinates[2] / self._x_axis_factor,
+                           region.tri_coordinates[3] / self._y_axis_factor],
+                          [region.tri_coordinates[4] / self._x_axis_factor,
+                           region.tri_coordinates[5] / self._y_axis_factor]]),
+                fill=False))
         else:
             raise TypeError('Unknown type in region list: {}'.format(type(region)))
 
