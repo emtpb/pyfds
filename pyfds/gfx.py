@@ -213,7 +213,8 @@ class Animator1D(Animator):
                                                  prec=self.time_precision, prefix=self._t_prefix))
                 main_plot.set_data(self.field.x.vector / self._x_axis_factor, data)
                 pl.pause(self.frame_delay)
-                self._save_frame()
+                if self.save_video:
+                    self._save_frame()
 
         sim_process.join()
         if self.save_video:
@@ -358,7 +359,8 @@ class Animator2D(Animator):
                                                  prec=self.time_precision, prefix=self._t_prefix))
                 main_plot.set_data(self.field_as_matrix(data))
                 pl.pause(self.frame_delay)
-                self._save_frame()
+                if self.save_video:
+                    self._save_frame()
 
         sim_process.join()
         if self.save_video:
