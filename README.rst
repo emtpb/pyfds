@@ -1,6 +1,8 @@
 =====
 pyFDs
 =====
+.. image:: https://zenodo.org/badge/92026828.svg
+   :target: https://zenodo.org/badge/latestdoi/92026828
 
 Modular field simulation tool using finite differences.
 
