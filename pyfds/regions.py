@@ -90,8 +90,8 @@ class Boundary:
 
         Args:
             region: Region the boundary is applied to.
-            value: Value the boundary applies to the field. May be scalar, list of scalars, signal
-                as numpy array or list of signals.
+            value: Value the boundary applies to the field. May be scalar, signal as numpy array
+                or list of signals.
             additive: Specifies if the boundary is additive to the field or if the fields value is
                 set directly.
         """
@@ -111,9 +111,8 @@ class Boundary:
             New values for the points in the boundary.
         """
 
-        if np.ndim(self.value) == 0 or \
-                (np.ndim(self.value) == 1 and type(self.value) == list):
-            # if a single value or a list of single values for each index is given
+        if np.ndim(self.value) == 0:
+            # if a single value is given
                 return self.additive * old_values + self.value
         elif type(self.value) == np.ndarray:
             # if a signal is given
