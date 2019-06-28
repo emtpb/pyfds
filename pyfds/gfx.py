@@ -22,7 +22,7 @@ class Animator:
             scale: Scale of the animation.
             frame_delay: Delay between animation updates.
             save_video: Save animation as video (requires ffmpeg).
-            video_name: File name for the video.
+            video_file_name: File name for the video.
         """
 
         self.field = field
