@@ -90,12 +90,12 @@ class Field:
         logger.info('Starting simulation of {} steps.'.format(num_steps))
 
         start_step = self.step
-        for self.step in range(start_step, start_step + num_steps):
+        while self.step < start_step + num_steps:
 
             self.sim_step()
-
             if progress_logger:
                 progress_logger.log(self.step)
+            self.step += 1
 
         logger.info('Simulation of {} steps completed.'.format(num_steps))
 

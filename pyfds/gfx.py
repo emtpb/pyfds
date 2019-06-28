@@ -70,7 +70,7 @@ class Animator:
 
         for ii in range(int(self.field.t.samples / self.steps_per_frame)):
             self.field.simulate(self.steps_per_frame)
-            queue.put((self.field.t.vector[self.field.step],
+            queue.put((self.field.t.vector[self.field.step - 1],
                        getattr(self.field, self.observed_component).values))
 
         # return field when simulation finishes to get output signals
