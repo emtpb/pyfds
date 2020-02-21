@@ -9,13 +9,22 @@ This project follows the guidelines of `Keep a changelog`_ and adheres to
 .. _Semantic versioning: https://semver.org/
 
 
-`Unreleased`_
-=============
+`0.1.3`_ - 2020-02-21
+=====================
 
 Added
--------
+-----
 * This changelog.
 * A DOI tag.
+
+Removed
+-------
+* Probably broken option to set multiple points in a boundary to different, constant values.
+
+Fixed
+-----
+* Animator docstring.
+* Stepping bug in segmented simulation runs,
 
 
 `0.1.2`_ - 2019-04-24
@@ -50,6 +59,7 @@ Added
 
 
 .. _Unreleased: https://github.com/emtpb/pyfds
+.. _0.1.3: https://github.com/emtpb/pyfds/releases/tag/0.1.3
 .. _0.1.2: https://github.com/emtpb/pyfds/releases/tag/0.1.2
 .. _0.1.1: https://github.com/emtpb/pyfds/releases/tag/0.1.1
 .. _0.1.0: https://github.com/emtpb/pyfds/releases/tag/0.1.0
