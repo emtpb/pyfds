@@ -123,6 +123,14 @@ class Field:
         self.material_regions.append(new_material_region)
         logger.info('Material region {} added.'.format(new_material_region.region.name))
 
+    def reset(self):
+        """Reset the field to all-zero but keep all boundaries to enable repeated simulation using
+        the same field object."""
+        for name in dir(self):
+            if type(getattr(self, name)) == FieldComponent:
+                getattr(self, name).values = np.zeros_like(getattr(self, name).values)
+        self.step = 0
+
 
 class Field1D(Field):
     """Class for one-dimensional fields."""

@@ -8,6 +8,13 @@ This project follows the guidelines of `Keep a changelog`_ and adheres to
 .. _Keep a changelog: http://keepachangelog.com/
 .. _Semantic versioning: https://semver.org/
 
+`Unreleased`_
+=============
+
+Added
+-----
+* Reset method that allows multiple simulation runs using the same Field object.
+
 
 `0.1.3`_ - 2020-02-21
 =====================
