@@ -24,7 +24,7 @@ Removed
 Fixed
 -----
 * Animator docstring.
-* Stepping bug in segmented simulation runs,
+* Stepping bug in segmented simulation runs.
 
 
 `0.1.2`_ - 2019-04-24
