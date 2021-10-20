@@ -15,6 +15,10 @@ Added
 -----
 * Reset method that allows multiple simulation runs using the same Field object.
 
+Fixed
+-----
+* Documentation issues.
+
 
 `0.1.3`_ - 2020-02-21
 =====================
