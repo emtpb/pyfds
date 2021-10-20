@@ -9,7 +9,7 @@ from . import regions as reg
 
 
 class Animator:
-    """Base class for pyFDs' live field animation during simulation."""
+    """Base class for pyfds' live field animation during simulation."""
 
     def __init__(self, field, observed_component=None, steps_per_frame=10, scale=1,
                  frame_delay=1e-2, save_video=False, video_file_name='pyfds_vid.mp4'):
@@ -118,7 +118,7 @@ class Animator:
 
 
 class Animator1D(Animator):
-    """Animator for one-dimensional field simulation in pyFDs."""
+    """Animator for one-dimensional field simulation in pyfds."""
 
     def __init__(self, *args, **kwargs):
         """Class constructor.
@@ -223,7 +223,7 @@ class Animator1D(Animator):
 
 
 class Animator2D(Animator):
-    """Animator for two-dimensional field simulation in pyFDs."""
+    """Animator for two-dimensional field simulation in pyfds."""
 
     def __init__(self, *args, **kwargs):
         """Class constructor.

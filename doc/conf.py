@@ -46,7 +46,7 @@ todo_include_todos = False
 
 # -- Project-specific configuration
 
-project = 'pyFDs'
+project = 'pyfds'
 description = 'Modular field simulation tool using finite differences.'
 author = 'Leander Claes'
 copyright = '{year}, {author}'.format(year=datetime.date.today().year,

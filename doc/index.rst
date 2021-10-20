@@ -1,4 +1,4 @@
-Welcome to pyFDs's documentation!
+Welcome to pyfds' documentation!
 =================================
 
 Version: |version| (|today|)

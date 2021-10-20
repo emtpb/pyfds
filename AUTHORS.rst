@@ -1,6 +1,6 @@
 =======
 Authors
 =======
-Authors of pyFDs, in chronological order:
+Authors of pyfds, in chronological order:
 
 * Leander Claes <claes@emt.uni-paderborn.de>

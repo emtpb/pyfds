@@ -1,5 +1,5 @@
 =====
-pyFDs
+pyfds
 =====
 .. image:: https://zenodo.org/badge/92026828.svg
    :target: https://zenodo.org/badge/latestdoi/92026828
