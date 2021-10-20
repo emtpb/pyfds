@@ -60,10 +60,7 @@ release = version
 
 # -- Options for HTML output
 
-html_theme = 'alabaster'
-html_theme_options = {
-    'description': description
-}
+html_theme = 'sphinx_rtd_theme'
 html_sidebars = {
     '**': ['about.html', 'navigation.html', 'searchbox.html']
 }
