@@ -6,7 +6,7 @@ Basics
 ------
 
 Since pyfds does not have a graphical interface to create geometry, apply boundary, etc. yet, we
-use small python script files to setup and run simulations. To use pyfds we must first import it:
+use small python script files to set up and run simulations. To use pyfds we must first import it:
 
 .. code-block:: python
 
@@ -19,7 +19,7 @@ We would suggest placing the setup and simulation code in
     if __name__ == '__main__':
 
 This is not always necessary, but some parts of pyfds (especially the visualization) requires it.
-As of now, only acoustic simulation is implemented, so we use it as an example. If one is to
+As of now, mainly acoustic simulations are implemented, so we use one as an example. If one is to
 implement new types of field simulation, these should follow the same pattern (if applicable).
 We start by creating the main material for the field to simulate. Here, we use a fluid
 similar to water:
@@ -87,7 +87,7 @@ output is recorded. You can create these region by calling the methods
 :func:`~pyfds.fields.Field.get_point_region`, :func:`~pyfds.fields.Field1D.get_line_region`, or
 :func:`~pyfds.fields.Field2D.get_rect_region` depending on what kind of region you want the
 boundary or output applied to (point, line, or rectangle). So, adding a boundary to the pressure
- in a two-dimensional field, that crosses the field diagonally would look like this:
+in a two-dimensional field, that crosses the field diagonally would look like this:
 
 .. code-block:: python
 
