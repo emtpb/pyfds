@@ -1,4 +1,8 @@
+import logging as lo
+import numpy as np
 from . import fields as fld
+
+logger = lo.getLogger('pyfds')
 
 
 class Thermal1D(fld.Field1D):
@@ -25,7 +29,7 @@ class Thermal1D(fld.Field1D):
                                        self.material_vector('density') /
                                        self.material_vector('heat_capacity')))
         self.a_q_t = self.d_x(factors=(1 / self.x.increment *
-                                       self.material_vector('thermal_conductivity')),
+                                       self.material_vector('thermal_conductivity_x')),
                               variant='backward')
         self.matrices_assembled = True
 
@@ -74,10 +78,10 @@ class Thermal2D(fld.Field2D):
                                         self.material_vector('density') /
                                         self.material_vector('heat_capacity')))
         self.a_qx_t = self.d_x(factors=(1 / self.x.increment *
-                                        self.material_vector('thermal_conductivity')),
+                                        self.material_vector('thermal_conductivity_x')),
                                variant='backward')
         self.a_qy_t = self.d_y(factors=(1 / self.y.increment *
-                                        self.material_vector('thermal_conductivity')),
+                                        self.material_vector('thermal_conductivity_y')),
                                variant='backward')
         self.matrices_assembled = True
 
@@ -113,4 +117,23 @@ class ThermalMaterial:
 
         self.heat_capacity = heat_capacity
         self.density = density
+        self.thermal_conductivity_x = None
+        self.thermal_conductivity_y = None
         self.thermal_conductivity = thermal_conductivity
+
+    @property
+    def thermal_conductivity(self):
+        return self.thermal_conductivity_x, self.thermal_conductivity_y
+
+    @thermal_conductivity.setter
+    def thermal_conductivity(self, value):
+        if isinstance(value, (list, tuple, np.ndarray)) and \
+                len(value) == 2:
+            self.thermal_conductivity_x = value[0]
+            self.thermal_conductivity_y = value[1]
+        elif isinstance(value, (float, int)):
+            self.thermal_conductivity_x = value
+            self.thermal_conductivity_y = value
+        else:
+            logger.error('Thermal conductivity must either be scalar or a 2 element vector.')
+            raise ValueError('Thermal conductivity must either be scalar or a 2 element vector.')
