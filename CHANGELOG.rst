@@ -8,11 +8,12 @@ This project follows the guidelines of `Keep a changelog`_ and adheres to
 .. _Keep a changelog: http://keepachangelog.com/
 .. _Semantic versioning: https://semver.org/
 
-`Unreleased`_
-=============
+`0.1.4`_ - 2021-11-02
+=====================
 
 Added
 -----
+* Thermal field simulations.
 * Reset method that allows multiple simulation runs using the same Field object.
 
 Fixed
@@ -70,6 +71,7 @@ Added
 
 
 .. _Unreleased: https://github.com/emtpb/pyfds
+.. _0.1.4: https://github.com/emtpb/pyfds/releases/tag/0.1.4
 .. _0.1.3: https://github.com/emtpb/pyfds/releases/tag/0.1.3
 .. _0.1.2: https://github.com/emtpb/pyfds/releases/tag/0.1.2
 .. _0.1.1: https://github.com/emtpb/pyfds/releases/tag/0.1.1
