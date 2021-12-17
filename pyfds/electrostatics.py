@@ -1,4 +1,5 @@
 import logging as lo
+import numpy as np
 import scipy.sparse as sp
 import scipy.sparse.linalg as sl
 import warnings as wn
@@ -31,7 +32,7 @@ class Electrostatic1D(fld.Field1D):
 
         # Conversion to Compressed Sparse Column format is necessary for efficient inversion
         a_rho_phi = sp.csc_matrix(
-            self.d_x2(factors=(self.material_vector('permittivity') /
+            self.d_x2(factors=(self.material_vector('permittivity_x') /
                                self.x.increment ** 2)))
         self.a_phi_rho = sl.inv(a_rho_phi)
         self.matrices_assembled = True
@@ -77,9 +78,9 @@ class Electrostatic2D(fld.Field2D):
 
         # Conversion to Compressed Sparse Column format is necessary for efficient inversion
         a_rho_phi = sp.csc_matrix(
-            self.d_x2(factors=(self.material_vector('permittivity') /
+            self.d_x2(factors=(self.material_vector('permittivity_x') /
                                self.x.increment ** 2)) +
-            self.d_y2(factors=(self.material_vector('permittivity') /
+            self.d_y2(factors=(self.material_vector('permittivity_y') /
                                self.y.increment ** 2)))
         self.a_phi_rho = sl.inv(a_rho_phi)
         self.matrices_assembled = True
@@ -108,4 +109,23 @@ class ElectrostaticMaterial:
         Args:
             permittivity: Permittivity in As/Vm.
         """
+        self.permittivity_x = None
+        self.permittivity_y = None
         self.permittivity = permittivity
+
+    @property
+    def permittivity(self):
+        return self.permittivity_x, self.permittivity_y
+
+    @permittivity.setter
+    def permittivity(self, value):
+        if isinstance(value, (list, tuple, np.ndarray)) and \
+                len(value) == 2:
+            self.permittivity_x = value[0]
+            self.permittivity_y = value[1]
+        elif isinstance(value, (float, int)):
+            self.permittivity_x = value
+            self.permittivity_y = value
+        else:
+            logger.error('Permittivity must either be scalar or a 2 element vector.')
+            raise ValueError('Permittivity must either be scalar or a 2 element vector.')
