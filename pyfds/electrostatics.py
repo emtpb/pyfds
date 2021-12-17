@@ -1,6 +1,7 @@
 import logging as lo
 import scipy.sparse as sp
 import scipy.sparse.linalg as sl
+import warnings as wn
 from . import fields as fld
 
 logger = lo.getLogger('pyfds')
@@ -42,6 +43,12 @@ class Electrostatic1D(fld.Field1D):
         self.charge_density.write_outputs()
 
         self.potential.values = -self.a_phi_rho.dot(self.charge_density.values)
+
+        if len(self.potential.boundaries) != 0:
+            wn.warn('Boundary conditions for electric potential are currently not supported.',
+                    stacklevel=2)
+            logger.warning(
+                'Boundary conditions for electric potential are currently not supported.')
 
 
 class ElectrostaticMaterial:
