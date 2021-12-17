@@ -176,7 +176,7 @@ class ThermalMaterial:
     """Class for specification of thermal material parameters."""
 
     def __init__(self, heat_capacity, density, thermal_conductivity):
-        """Class constructor. Default values for optional parameters create lossless medium.
+        """Class constructor.
 
         Args:
             heat_capacity: Specific heat capacity.
