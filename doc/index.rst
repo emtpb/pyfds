@@ -23,6 +23,8 @@ API
     regions
     acoustics
     nonlinear_acoustics
+    thermal
+    electrostatics
     gfx
 
 Indices and tables
