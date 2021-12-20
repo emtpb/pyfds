@@ -8,6 +8,20 @@ This project follows the guidelines of `Keep a changelog`_ and adheres to
 .. _Keep a changelog: http://keepachangelog.com/
 .. _Semantic versioning: https://semver.org/
 
+
+`0.1.5`_ - 2021-12-20
+=====================
+
+Added
+-----
+* Electrostatic field simulations.
+* Thermal and electrostatics API documentation.
+
+Fixed
+-----
+* Documentation issues.
+
+
 `0.1.4`_ - 2021-11-02
 =====================
 
@@ -71,6 +85,7 @@ Added
 
 
 .. _Unreleased: https://github.com/emtpb/pyfds
+.. _0.1.5: https://github.com/emtpb/pyfds/releases/tag/0.1.5
 .. _0.1.4: https://github.com/emtpb/pyfds/releases/tag/0.1.4
 .. _0.1.3: https://github.com/emtpb/pyfds/releases/tag/0.1.3
 .. _0.1.2: https://github.com/emtpb/pyfds/releases/tag/0.1.2
