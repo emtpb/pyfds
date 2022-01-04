@@ -3,7 +3,6 @@ import matplotlib.pyplot as pp
 import multiprocessing as mp
 import numpy as np
 import os
-import pylab as pl
 from . import fields as fld
 from . import regions as reg
 
@@ -92,7 +91,7 @@ class Animator:
         """Save current frame of animation to a png file for video creation."""
 
         file_name = 'frame{0:06d}.png'.format(len(self.image_files))
-        pl.savefig(file_name, dpi=self.video_dpi)
+        pp.savefig(file_name, dpi=self.video_dpi)
         self.image_files.append(file_name)
 
     def _create_video(self):
@@ -199,13 +198,13 @@ class Animator1D(Animator):
 
             # wait for simulation initialization
             while self._plot_queue.empty():
-                pl.pause(0.1)
+                pp.pause(0.1)
 
             finished = False
             while not finished:
                 # wait for new simulation result
                 while self._plot_queue.empty():
-                    pl.pause(0.01)
+                    pp.pause(0.01)
 
                 message = self._plot_queue.get()
                 # simulation function returns field object when simulation terminates to get output
@@ -221,7 +220,7 @@ class Animator1D(Animator):
                                                      prec=self.time_precision,
                                                      prefix=self._t_prefix))
                     main_plot.set_data(self.field.x.vector / self._x_axis_factor, data)
-                    pl.pause(self.frame_delay)
+                    pp.pause(self.frame_delay)
                     if self.save_video:
                         self._save_frame()
 
@@ -355,13 +354,13 @@ class Animator2D(Animator):
 
             # wait for simulation initialization
             while self._plot_queue.empty():
-                pl.pause(0.1)
+                pp.pause(0.1)
 
             finished = False
             while not finished:
                 # wait for new simulation result
                 while self._plot_queue.empty():
-                    pl.pause(0.01)
+                    pp.pause(0.01)
 
                 message = self._plot_queue.get()
                 # simulation function returns field object when simulation terminates to get output
@@ -377,7 +376,7 @@ class Animator2D(Animator):
                                                      prec=self.time_precision,
                                                      prefix=self._t_prefix))
                     main_plot.set_data(self.field_as_matrix(data))
-                    pl.pause(self.frame_delay)
+                    pp.pause(self.frame_delay)
                     if self.save_video:
                         self._save_frame()
 
