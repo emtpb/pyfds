@@ -37,7 +37,13 @@ class Animator:
             self.observed_component = list(self.field_components.keys())[0]
 
         self.steps_per_frame = int(steps_per_frame)
-        self.scale = scale
+        if isinstance(scale, (list, tuple, np.ndarray)) and \
+                len(scale) == 2:
+            self.scale = scale
+        elif isinstance(scale, (float, int)):
+            self.scale = (-scale, scale)
+        else:
+            raise ValueError('Scale must either be scalar or a 2 element vector.')
         self.frame_delay = frame_delay
         self.save_video = save_video
         self.video_file_name = video_file_name
@@ -138,12 +144,12 @@ class Animator1D(Animator):
 
         if type(region) == reg.PointRegion:
             self.axes.plot(np.ones(2) * region.point_coordinates / self._x_axis_factor,
-                           np.array([-1, 1]) * self.scale, color='black')
+                           self.scale, color='black')
         elif type(region) == reg.LineRegion:
             self.axes.plot(np.ones(2) * region.line_coordinates[0] / self._x_axis_factor,
-                           np.array([-1, 1]) * self.scale, color='black')
+                           self.scale, color='black')
             self.axes.plot(np.ones(2) * region.line_coordinates[1] / self._x_axis_factor,
-                           np.array([-1, 1]) * self.scale, color='black')
+                           self.scale, color='black')
         else:
             raise TypeError('Unknown type in region list: {}'.format(type(region)))
 
@@ -158,7 +164,7 @@ class Animator1D(Animator):
         pp.figure()
         self.axes = pp.gca()
         self.axes.set_xlim(0, max(self.field.x.vector) / self._x_axis_factor)
-        self.axes.set_ylim(-self.scale, self.scale)
+        self.axes.set_ylim(self.scale)
         self.axes.set_xlabel('{0} / {1}m'.format(self.x_label, self._x_axis_prefix))
         self.axes.set_ylabel(self.y_label)
         pp.grid(True)
@@ -338,7 +344,7 @@ class Animator2D(Animator):
                                      extent=(0, max(self.field.x.vector) / self._x_axis_factor,
                                              max(self.field.y.vector) / self._y_axis_factor, 0),
                                      cmap='viridis')
-        main_plot.set_clim(-self.scale, self.scale)
+        main_plot.set_clim(self.scale)
         color_bar = pp.colorbar(main_plot)
         color_bar.set_label(self.observed_component, rotation=270)
 
