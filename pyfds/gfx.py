@@ -187,38 +187,48 @@ class Animator1D(Animator):
         self.show_setup(halt=False)
         main_plot, = self.axes.plot([])
 
-        sim_process = mp.Process(target=self._sim_function, args=(self._plot_queue,))
-        sim_process.start()
+        # do not use multiprocessing if simulation is a single step
+        if self.field.t.samples == 1:
+            self.field.simulate()
+            data = getattr(self.field, self.observed_component).values
+            main_plot.set_data(self.field.x.vector / self._x_axis_factor, data)
 
-        # wait for simulation initialization
-        while self._plot_queue.empty():
-            pl.pause(0.1)
+        else:
+            sim_process = mp.Process(target=self._sim_function, args=(self._plot_queue,))
+            sim_process.start()
 
-        finished = False
-        while not finished:
-            # wait for new simulation result
+            # wait for simulation initialization
             while self._plot_queue.empty():
-                pl.pause(0.01)
+                pl.pause(0.1)
 
-            message = self._plot_queue.get()
-            # simulation function returns field object when simulation is complete to get output
-            if isinstance(message, fld.Field):
-                # update main process field components with simulation result
-                self._update_components(message)
-                finished = True
-            else:
-                time, data = message
-                self.axes.title.set_text('{title} $t$ = {time:.{prec}f} {prefix}s'
-                                         .format(title=self.plot_title, time=time/self._t_factor,
-                                                 prec=self.time_precision, prefix=self._t_prefix))
-                main_plot.set_data(self.field.x.vector / self._x_axis_factor, data)
-                pl.pause(self.frame_delay)
-                if self.save_video:
-                    self._save_frame()
+            finished = False
+            while not finished:
+                # wait for new simulation result
+                while self._plot_queue.empty():
+                    pl.pause(0.01)
 
-        sim_process.join()
-        if self.save_video:
-            self._create_video()
+                message = self._plot_queue.get()
+                # simulation function returns field object when simulation terminates to get output
+                if isinstance(message, fld.Field):
+                    # update main process field components with simulation result
+                    self._update_components(message)
+                    finished = True
+                else:
+                    time, data = message
+                    self.axes.title.set_text('{title} $t$ = {time:.{prec}f} {prefix}s'
+                                             .format(title=self.plot_title,
+                                                     time=time/self._t_factor,
+                                                     prec=self.time_precision,
+                                                     prefix=self._t_prefix))
+                    main_plot.set_data(self.field.x.vector / self._x_axis_factor, data)
+                    pl.pause(self.frame_delay)
+                    if self.save_video:
+                        self._save_frame()
+
+            sim_process.join()
+            if self.save_video:
+                self._create_video()
+
         pp.show()
 
 
@@ -333,38 +343,48 @@ class Animator2D(Animator):
         color_bar = pp.colorbar(main_plot)
         color_bar.set_label(self.observed_component, rotation=270)
 
-        sim_process = mp.Process(target=self._sim_function, args=(self._plot_queue,))
-        sim_process.start()
+        # do not use multiprocessing if simulation is a single step
+        if self.field.t.samples == 1:
+            self.field.simulate()
+            data = getattr(self.field, self.observed_component).values
+            main_plot.set_data(self.field_as_matrix(data))
 
-        # wait for simulation initialization
-        while self._plot_queue.empty():
-            pl.pause(0.1)
+        else:
+            sim_process = mp.Process(target=self._sim_function, args=(self._plot_queue,))
+            sim_process.start()
 
-        finished = False
-        while not finished:
-            # wait for new simulation result
+            # wait for simulation initialization
             while self._plot_queue.empty():
-                pl.pause(0.01)
+                pl.pause(0.1)
 
-            message = self._plot_queue.get()
-            # simulation function returns field object when simulation is complete to get output
-            if isinstance(message, fld.Field):
-                # update main process field components with simulation result
-                self._update_components(message)
-                finished = True
-            else:
-                time, data = message
-                self.axes.title.set_text('{title} $t$ = {time:.{prec}f} {prefix}s'
-                                         .format(title=self.plot_title, time=time/self._t_factor,
-                                                 prec=self.time_precision, prefix=self._t_prefix))
-                main_plot.set_data(self.field_as_matrix(data))
-                pl.pause(self.frame_delay)
-                if self.save_video:
-                    self._save_frame()
+            finished = False
+            while not finished:
+                # wait for new simulation result
+                while self._plot_queue.empty():
+                    pl.pause(0.01)
 
-        sim_process.join()
-        if self.save_video:
-            self._create_video()
+                message = self._plot_queue.get()
+                # simulation function returns field object when simulation terminates to get output
+                if isinstance(message, fld.Field):
+                    # update main process field components with simulation result
+                    self._update_components(message)
+                    finished = True
+                else:
+                    time, data = message
+                    self.axes.title.set_text('{title} $t$ = {time:.{prec}f} {prefix}s'
+                                             .format(title=self.plot_title,
+                                                     time=time/self._t_factor,
+                                                     prec=self.time_precision,
+                                                     prefix=self._t_prefix))
+                    main_plot.set_data(self.field_as_matrix(data))
+                    pl.pause(self.frame_delay)
+                    if self.save_video:
+                        self._save_frame()
+
+            sim_process.join()
+            if self.save_video:
+                self._create_video()
+
         pp.show()
 
 
