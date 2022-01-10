@@ -204,5 +204,4 @@ class ThermalMaterial:
             self.thermal_conductivity_x = value
             self.thermal_conductivity_y = value
         else:
-            logger.error('Thermal conductivity must either be scalar or a 2 element vector.')
             raise ValueError('Thermal conductivity must either be scalar or a 2 element vector.')

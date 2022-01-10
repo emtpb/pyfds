@@ -127,5 +127,4 @@ class ElectrostaticMaterial:
             self.permittivity_x = value
             self.permittivity_y = value
         else:
-            logger.error('Permittivity must either be scalar or a 2 element vector.')
             raise ValueError('Permittivity must either be scalar or a 2 element vector.')
