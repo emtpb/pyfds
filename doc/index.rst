@@ -22,6 +22,7 @@ API
     fields
     regions
     acoustics
+    acoustic_flow
     nonlinear_acoustics
     thermal
     electrostatics

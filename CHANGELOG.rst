@@ -9,6 +9,19 @@ This project follows the guidelines of `Keep a changelog`_ and adheres to
 .. _Semantic versioning: https://semver.org/
 
 
+`0.1.6`_ - 2023-03-30
+=====================
+
+Added
+-----
+* Acoustic simulation with moving medium.
+* Asymmetric scaling for animations.
+
+Fixed
+-----
+* Minor issues.
+
+
 `0.1.5`_ - 2021-12-20
 =====================
 
@@ -85,6 +98,7 @@ Added
 
 
 .. _Unreleased: https://github.com/emtpb/pyfds
+.. _0.1.6: https://github.com/emtpb/pyfds/releases/tag/0.1.6
 .. _0.1.5: https://github.com/emtpb/pyfds/releases/tag/0.1.5
 .. _0.1.4: https://github.com/emtpb/pyfds/releases/tag/0.1.4
 .. _0.1.3: https://github.com/emtpb/pyfds/releases/tag/0.1.3
