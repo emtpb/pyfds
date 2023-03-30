@@ -30,12 +30,12 @@ class AcousticFlow2D(acs.Acoustic2D):
         else:
             raise ValueError('Flow must either be scalar or a vector with length of y_samples.')
 
-        # Map flow velocity to integer multiples of x_delta per t_delta.
-        self.flow_increments = (self.flow * self.t.increment // self.x.increment).astype(int)
+        # Determine at which time step period the values have to be shifted.
+        self.flow_t_deltas = (self.x.increment / self.flow / self.t.increment).astype(int)
 
-        if np.all(self.flow_increments == 0):
-            wn.warn('Flow velocity is to small to have an effect.', stacklevel=2)
-            logger.warning('Flow velocity is to small to have an effect.')
+        if np.any(self.flow_t_deltas == 1) or np.any(self.flow_t_deltas == 0):
+            wn.warn('Flow velocity may be to high. Consider reducing t_delta.', stacklevel=2)
+            logger.warning('Flow velocity may be to high. Consider reducing t_delta.')
 
     def sim_step(self):
         """Simulate one step."""
@@ -46,7 +46,8 @@ class AcousticFlow2D(acs.Acoustic2D):
         """Apply flow field to the field components."""
 
         for component in [self.pressure, self.velocity_x, self.velocity_y]:
-            for n, f in enumerate(self.flow_increments):
-                component.values[n * self.x.samples + f: (n + 1) * self.x.samples] = \
-                    component.values[n * self.x.samples: (n + 1) * self.x.samples - f]
-                component.values[n * self.x.samples: n * self.x.samples + f] = 0
+            for n, f in enumerate(self.flow_t_deltas):
+                if self.step % f == 0:
+                    component.values[n * self.x.samples + 1: (n + 1) * self.x.samples] = \
+                        component.values[n * self.x.samples: (n + 1) * self.x.samples - 1]
+                    component.values[n * self.x.samples: n * self.x.samples + 1] = 0
