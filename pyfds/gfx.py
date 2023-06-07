@@ -82,9 +82,9 @@ class Animator:
         queue.put(self.field)
 
     def _update_components(self, message):
-        """Function to be called when simulation process finished to update the field components 
+        """Function to be called when simulation process finished to update the field components
         the main process including the output signals
-        
+
         Args:
             message: Field object returned by the simulation process.
         """
@@ -112,8 +112,8 @@ class Animator:
         if not answer or answer.capitalize() == 'Y':
             # video codec requires the image size to be dividable by 2. Numbers (6.4 and 4.78)
             # result from matplotlibs standard figure size.
-            width = int((self.video_dpi * 6.4)//2 * 2)
-            height = int((self.video_dpi * 4.78)//2 * 2)
+            width = int((self.video_dpi * 6.4) // 2 * 2)
+            height = int((self.video_dpi * 4.78) // 2 * 2)
             os.system('{} -loglevel error -framerate {} -i frame%06d.png -pix_fmt yuv420p -vf '
                       'scale={}:{} {}'.format(self.ffmpeg_path, self.video_fps, width, height,
                                               self.video_file_name))
@@ -154,9 +154,9 @@ class Animator1D(Animator):
             raise TypeError('Unknown type in region list: {}'.format(type(region)))
 
     def show_setup(self, halt=True):
-        """Open a plot window that shows the simulation setup including boundaries, outputs and 
+        """Open a plot window that shows the simulation setup including boundaries, outputs and
         material regions.
-        
+
         Args:
             halt: Halt script execution until plot window is closed.
         """
@@ -222,7 +222,7 @@ class Animator1D(Animator):
                     time, data = message
                     self.axes.title.set_text('{title} $t$ = {time:.{prec}f} {prefix}s'
                                              .format(title=self.plot_title,
-                                                     time=time/self._t_factor,
+                                                     time=time / self._t_factor,
                                                      prec=self.time_precision,
                                                      prefix=self._t_prefix))
                     main_plot.set_data(self.field.x.vector / self._x_axis_factor, data)
@@ -310,7 +310,7 @@ class Animator2D(Animator):
         return np.reshape(component, (self.field.y.samples, self.field.x.samples))
 
     def show_setup(self, halt=True):
-        """Open a plot window that shows the simulation setup including boundaries, outputs and 
+        """Open a plot window that shows the simulation setup including boundaries, outputs and
         material regions.
 
         Args:
@@ -384,7 +384,7 @@ class Animator2D(Animator):
                     time, data = message
                     self.axes.title.set_text('{title} $t$ = {time:.{prec}f} {prefix}s'
                                              .format(title=self.plot_title,
-                                                     time=time/self._t_factor,
+                                                     time=time / self._t_factor,
                                                      prec=self.time_precision,
                                                      prefix=self._t_prefix))
                     main_plot.set_data(self.field_as_matrix(data))
@@ -401,13 +401,13 @@ class Animator2D(Animator):
 
 def get_prefix(value):
     """Determine the metric prefix for a given value.
-    
+
     Args:
         value: Value to determine the prefix for.
 
     Returns:
         prefix: String specifying the prefix.
-        factor: Scale factor of the prefix.        
+        factor: Scale factor of the prefix.
     """
     for factor, prefix in sorted(prefixes.items()):
         if value / factor < 1e3:

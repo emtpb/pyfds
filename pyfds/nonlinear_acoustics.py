@@ -35,18 +35,18 @@ class IdealGas1D(fld.Field1D):
     def assemble_matrices(self):
         """Assemble the a_* matrices and buffer material parameters required for simulation."""
 
-        self.a_d_v = self.d_x(factors=(self.t.increment / self.x.increment *
-                                       np.ones(self.x.samples)))
-        self.a_v_p = self.d_x(factors=(self.t.increment / self.x.increment) *
-                              np.ones(self.x.samples), variant='backward')
-        self.a_v_v = self.d_x2(factors=(self.t.increment / self.x.increment ** 2 *
-                                        self.material_vector('absorption_coef')))
-        self.a_v_v2 = self.d_x(factors=(self.t.increment / self.x.increment / 2) *
-                               np.ones(self.x.samples), variant='central')
+        self.a_d_v = self.d_x(factors=(self.t.increment / self.x.increment
+                                       * np.ones(self.x.samples)))
+        self.a_v_p = self.d_x(factors=(self.t.increment / self.x.increment)
+                              * np.ones(self.x.samples), variant='backward')
+        self.a_v_v = self.d_x2(factors=(self.t.increment / self.x.increment ** 2
+                                        * self.material_vector('absorption_coef')))
+        self.a_v_v2 = self.d_x(factors=(self.t.increment / self.x.increment / 2)
+                               * np.ones(self.x.samples), variant='central')
         self.stat_density = self.material_vector('density')
         self.sound_velocity = self.material_vector('sound_velocity')
-        self.heat_cap_ratio = (self.material_vector('isobaric_heat_cap') /
-                               self.material_vector('isochoric_heat_cap'))
+        self.heat_cap_ratio = (self.material_vector('isobaric_heat_cap')
+                               / self.material_vector('isochoric_heat_cap'))
         self.matrices_assembled = True
 
     def sim_step(self):
@@ -56,22 +56,22 @@ class IdealGas1D(fld.Field1D):
         self.pressure.write_outputs()
 
         if self.convective:
-            self.velocity.values -= (self.a_v_p.dot(self.pressure.values) /
-                                     (self.stat_density + self.density.values) +
-                                     self.a_v_v2.dot(self.velocity.values) -
-                                     self.a_v_v.dot(self.velocity.values) /
-                                     (self.stat_density + self.density.values))
+            self.velocity.values -= (self.a_v_p.dot(self.pressure.values)
+                                     / (self.stat_density + self.density.values)
+                                     + self.a_v_v2.dot(self.velocity.values)
+                                     - self.a_v_v.dot(self.velocity.values)
+                                     / (self.stat_density + self.density.values))
         else:
-            self.velocity.values -= (self.a_v_p.dot(self.pressure.values) /
-                                     (self.stat_density + self.density.values) -
-                                     self.a_v_v.dot(self.velocity.values) /
-                                     (self.stat_density + self.density.values))
+            self.velocity.values -= (self.a_v_p.dot(self.pressure.values)
+                                     / (self.stat_density + self.density.values)
+                                     - self.a_v_v.dot(self.velocity.values)
+                                     / (self.stat_density + self.density.values))
 
         self.velocity.apply_bounds(self.step)
         self.velocity.write_outputs()
 
-        self.density.values -= self.a_d_v.dot((self.density.values + self.stat_density) *
-                                              self.velocity.values)
+        self.density.values -= self.a_d_v.dot((self.density.values + self.stat_density)
+                                              * self.velocity.values)
 
         self.density.apply_bounds(self.step)
         self.density.write_outputs()
@@ -93,12 +93,12 @@ class IdealGas1D(fld.Field1D):
             True if stable, False if not.
         """
 
-        return np.all(self.material_vector('sound_velocity') <
-                      0.99 * self.x.increment / self.t.increment)
+        return np.all(self.material_vector('sound_velocity')
+                      < 0.99 * self.x.increment / self.t.increment)
 
 
 class Acoustic2ndOrder1D(fld.Field1D):
-    """Class for simulation of one-dimensional nonlinear acoustic fields using second order 
+    """Class for simulation of one-dimensional nonlinear acoustic fields using second order
     approximation."""
 
     def __init__(self, *args, **kwargs):
@@ -108,8 +108,8 @@ class Acoustic2ndOrder1D(fld.Field1D):
             See pyfds.fields.Field1D constructor arguments.
         """
 
-        if not (hasattr(kwargs['material'], 'd_rho_p') and
-                hasattr(kwargs['material'], 'd_rho2_p')):
+        if not (hasattr(kwargs['material'], 'd_rho_p')
+                and hasattr(kwargs['material'], 'd_rho2_p')):
             wn.warn('Material with properties d_rho_p and d_rho2_p is required for 2nd order '
                     'nonlinear acoustic simulation.')
         super().__init__(*args, **kwargs)
@@ -130,14 +130,14 @@ class Acoustic2ndOrder1D(fld.Field1D):
     def assemble_matrices(self):
         """Assemble the a_* matrices and buffer material parameters required for simulation."""
 
-        self.a_d_v = self.d_x(factors=(self.t.increment / self.x.increment *
-                                       np.ones(self.x.samples)))
-        self.a_v_p = self.d_x(factors=(self.t.increment / self.x.increment) *
-                              np.ones(self.x.samples), variant='backward')
-        self.a_v_v = self.d_x2(factors=(self.t.increment / self.x.increment ** 2 *
-                                        self.material_vector('absorption_coef')))
-        self.a_v_v2 = self.d_x(factors=(self.t.increment / self.x.increment / 2) *
-                               np.ones(self.x.samples), variant='central')
+        self.a_d_v = self.d_x(factors=(self.t.increment / self.x.increment
+                                       * np.ones(self.x.samples)))
+        self.a_v_p = self.d_x(factors=(self.t.increment / self.x.increment)
+                              * np.ones(self.x.samples), variant='backward')
+        self.a_v_v = self.d_x2(factors=(self.t.increment / self.x.increment ** 2
+                                        * self.material_vector('absorption_coef')))
+        self.a_v_v2 = self.d_x(factors=(self.t.increment / self.x.increment / 2)
+                               * np.ones(self.x.samples), variant='central')
         self.stat_density = self.material_vector('density')
         self.d_rho_p = self.material_vector('d_rho_p')
         self.d_rho2_p = self.material_vector('d_rho2_p')
@@ -149,17 +149,17 @@ class Acoustic2ndOrder1D(fld.Field1D):
         self.pressure.apply_bounds(self.step)
         self.pressure.write_outputs()
 
-        self.velocity.values -= (self.a_v_p.dot(self.pressure.values) /
-                                 (self.stat_density + self.density.values) +
-                                 self.a_v_v2.dot(self.velocity.values) -
-                                 self.a_v_v.dot(self.velocity.values) /
-                                 (self.stat_density + self.density.values))
+        self.velocity.values -= (self.a_v_p.dot(self.pressure.values)
+                                 / (self.stat_density + self.density.values)
+                                 + self.a_v_v2.dot(self.velocity.values)
+                                 - self.a_v_v.dot(self.velocity.values)
+                                 / (self.stat_density + self.density.values))
 
         self.velocity.apply_bounds(self.step)
         self.velocity.write_outputs()
 
-        self.density.values -= self.a_d_v.dot((self.density.values + self.stat_density) *
-                                              self.velocity.values)
+        self.density.values -= self.a_d_v.dot((self.density.values + self.stat_density)
+                                              * self.velocity.values)
 
         self.density.apply_bounds(self.step)
         self.density.write_outputs()

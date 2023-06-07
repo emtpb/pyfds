@@ -203,7 +203,7 @@ class Field1D(Field):
         if factors is None:
             factors = np.array(1).repeat(self.num_points)
 
-        return sp.dia_matrix((np.array([factors, -2*factors, factors]), [-1, 0, 1]),
+        return sp.dia_matrix((np.array([factors, -2 * factors, factors]), [-1, 0, 1]),
                              shape=(self.num_points, self.num_points))
 
     def get_index(self, position):
@@ -295,7 +295,7 @@ class Field2D(Field):
             return sp.dia_matrix((np.array([-factors, factors]), [0, 1]),
                                  shape=(self.num_points, self.num_points))
         elif variant == 'central':
-            return sp.dia_matrix((np.array([-factors/2, factors/2]), [-1, 1]),
+            return sp.dia_matrix((np.array([-factors / 2, factors / 2]), [-1, 1]),
                                  shape=(self.num_points, self.num_points))
         elif variant == 'backward':
             return sp.dia_matrix((np.array([-factors, factors]), [-1, 0]),
@@ -324,7 +324,7 @@ class Field2D(Field):
                                  shape=(self.num_points, self.num_points))
         elif variant == 'central':
             return sp.dia_matrix(
-                (np.array([-factors/2, factors/2]), [-self.x.samples, self.x.samples]),
+                (np.array([-factors / 2, factors / 2]), [-self.x.samples, self.x.samples]),
                 shape=(self.num_points, self.num_points))
         elif variant == 'backward':
             return sp.dia_matrix((np.array([-factors, factors]), [-self.x.samples, 0]),
@@ -347,7 +347,7 @@ class Field2D(Field):
         if factors is None:
             factors = np.array(1).repeat(self.num_points)
 
-        return sp.dia_matrix((np.array([factors, -2*factors, factors]), [-1, 0, 1]),
+        return sp.dia_matrix((np.array([factors, -2 * factors, factors]), [-1, 0, 1]),
                              shape=(self.num_points, self.num_points))
 
     def d_y2(self, factors=None):
@@ -365,7 +365,7 @@ class Field2D(Field):
         if factors is None:
             factors = np.array(1).repeat(self.num_points)
 
-        return sp.dia_matrix((np.array([factors, -2*factors, factors]),
+        return sp.dia_matrix((np.array([factors, -2 * factors, factors]),
                               [-self.x.samples, 0, self.x.samples]),
                              shape=(self.num_points, self.num_points))
 
@@ -499,7 +499,7 @@ class Field2D(Field):
                          self.get_index(position[4:]))
 
         inside_indices = []
-        for ii in range(min(point_indices), max(point_indices)+1):
+        for ii in range(min(point_indices), max(point_indices) + 1):
             point = self.get_position(ii)
             if edge_01(point) >= 0 and edge_12(point) >= 0 and edge_20(point) >= 0:
                 inside_indices.append(ii)

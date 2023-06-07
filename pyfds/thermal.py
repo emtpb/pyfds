@@ -25,11 +25,11 @@ class Thermal1D(fld.Field1D):
     def assemble_matrices(self):
         """Assemble the a_* matrices required for simulation."""
 
-        self.a_t_q = self.d_x(factors=(self.t.increment / self.x.increment /
-                                       self.material_vector('density') /
-                                       self.material_vector('heat_capacity')))
-        self.a_q_t = self.d_x(factors=(1 / self.x.increment *
-                                       self.material_vector('thermal_conductivity_x')),
+        self.a_t_q = self.d_x(factors=(self.t.increment / self.x.increment
+                                       / self.material_vector('density')
+                                       / self.material_vector('heat_capacity')))
+        self.a_q_t = self.d_x(factors=(1 / self.x.increment
+                                       * self.material_vector('thermal_conductivity_x')),
                               variant='backward')
         self.matrices_assembled = True
 
@@ -71,17 +71,17 @@ class Thermal2D(fld.Field2D):
     def assemble_matrices(self):
         """Assemble the a_* matrices required for simulation."""
 
-        self.a_t_qx = self.d_x(factors=(self.t.increment / self.x.increment /
-                                        self.material_vector('density') /
-                                        self.material_vector('heat_capacity')))
-        self.a_t_qy = self.d_y(factors=(self.t.increment / self.y.increment /
-                                        self.material_vector('density') /
-                                        self.material_vector('heat_capacity')))
-        self.a_qx_t = self.d_x(factors=(1 / self.x.increment *
-                                        self.material_vector('thermal_conductivity_x')),
+        self.a_t_qx = self.d_x(factors=(self.t.increment / self.x.increment
+                                        / self.material_vector('density')
+                                        / self.material_vector('heat_capacity')))
+        self.a_t_qy = self.d_y(factors=(self.t.increment / self.y.increment
+                                        / self.material_vector('density')
+                                        / self.material_vector('heat_capacity')))
+        self.a_qx_t = self.d_x(factors=(1 / self.x.increment
+                                        * self.material_vector('thermal_conductivity_x')),
                                variant='backward')
-        self.a_qy_t = self.d_y(factors=(1 / self.y.increment *
-                                        self.material_vector('thermal_conductivity_y')),
+        self.a_qy_t = self.d_y(factors=(1 / self.y.increment
+                                        * self.material_vector('thermal_conductivity_y')),
                                variant='backward')
         self.matrices_assembled = True
 
@@ -99,8 +99,8 @@ class Thermal2D(fld.Field2D):
         self.heat_flux_y.apply_bounds(self.step)
         self.heat_flux_y.write_outputs()
 
-        self.temperature.values -= (self.a_t_qx.dot(self.heat_flux_x.values) +
-                                    self.a_t_qy.dot(self.heat_flux_y.values))
+        self.temperature.values -= (self.a_t_qx.dot(self.heat_flux_x.values)
+                                    + self.a_t_qy.dot(self.heat_flux_y.values))
 
 
 class Thermal3DAxi(fld.Field2D):
@@ -135,22 +135,22 @@ class Thermal3DAxi(fld.Field2D):
             Radius of each heat flux point.
         """
 
-        return np.tile(self.x.vector, self.y.samples) + self.x.increment/2
+        return np.tile(self.x.vector, self.y.samples) + self.x.increment / 2
 
     def assemble_matrices(self):
         """Assemble the a_* matrices required for simulation."""
 
-        self.a_t_qx = self.d_x(factors=(self.t.increment / self.x.increment /
-                                        self.material_vector('density') /
-                                        self.material_vector('heat_capacity') / self._radii()))
-        self.a_t_qy = self.d_y(factors=(self.t.increment / self.y.increment /
-                                        self.material_vector('density') /
-                                        self.material_vector('heat_capacity')))
-        self.a_qx_t = self.d_x(factors=(1 / self.x.increment *
-                                        self.material_vector('thermal_conductivity_x')),
+        self.a_t_qx = self.d_x(factors=(self.t.increment / self.x.increment
+                                        / self.material_vector('density')
+                                        / self.material_vector('heat_capacity') / self._radii()))
+        self.a_t_qy = self.d_y(factors=(self.t.increment / self.y.increment
+                                        / self.material_vector('density')
+                                        / self.material_vector('heat_capacity')))
+        self.a_qx_t = self.d_x(factors=(1 / self.x.increment
+                                        * self.material_vector('thermal_conductivity_x')),
                                variant='backward')
-        self.a_qy_t = self.d_y(factors=(1 / self.y.increment *
-                                        self.material_vector('thermal_conductivity_y')),
+        self.a_qy_t = self.d_y(factors=(1 / self.y.increment
+                                        * self.material_vector('thermal_conductivity_y')),
                                variant='backward')
         self.matrices_assembled = True
 
@@ -168,8 +168,8 @@ class Thermal3DAxi(fld.Field2D):
         self.heat_flux_y.apply_bounds(self.step)
         self.heat_flux_y.write_outputs()
 
-        self.temperature.values -= (self.a_t_qx.dot(self.heat_flux_x.values * self._radii()) +
-                                    self.a_t_qy.dot(self.heat_flux_y.values))
+        self.temperature.values -= (self.a_t_qx.dot(self.heat_flux_x.values * self._radii())
+                                    + self.a_t_qy.dot(self.heat_flux_y.values))
 
 
 class ThermalMaterial:

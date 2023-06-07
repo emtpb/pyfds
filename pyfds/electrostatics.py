@@ -32,8 +32,8 @@ class Electrostatic1D(fld.Field1D):
 
         # Conversion to Compressed Sparse Column format is necessary for efficient inversion
         a_rho_phi = sp.csc_matrix(
-            self.d_x2(factors=(self.material_vector('permittivity_x') /
-                               self.x.increment ** 2)))
+            self.d_x2(factors=(self.material_vector('permittivity_x')
+                               / self.x.increment ** 2)))
         self.a_phi_rho = sl.inv(a_rho_phi)
         self.matrices_assembled = True
 
@@ -78,10 +78,10 @@ class Electrostatic2D(fld.Field2D):
 
         # Conversion to Compressed Sparse Column format is necessary for efficient inversion
         a_rho_phi = sp.csc_matrix(
-            self.d_x2(factors=(self.material_vector('permittivity_x') /
-                               self.x.increment ** 2)) +
-            self.d_y2(factors=(self.material_vector('permittivity_y') /
-                               self.y.increment ** 2)))
+            self.d_x2(factors=(self.material_vector('permittivity_x')
+                               / self.x.increment ** 2))
+            + self.d_y2(factors=(self.material_vector('permittivity_y')
+                                 / self.y.increment ** 2)))
         self.a_phi_rho = sl.inv(a_rho_phi)
         self.matrices_assembled = True
 
