@@ -9,6 +9,14 @@ This project follows the guidelines of `Keep a changelog`_ and adheres to
 .. _Semantic versioning: https://semver.org/
 
 
+`Unreleased`_
+=============
+
+Added
+-----
+* Support for elliptic regions.
+
+
 `0.1.6`_ - 2023-03-30
 =====================
 

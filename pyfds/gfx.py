@@ -285,6 +285,12 @@ class Animator2D(Animator):
                           [region.tri_coordinates[4] / self._x_axis_factor,
                            region.tri_coordinates[5] / self._y_axis_factor]]),
                 fill=False))
+        elif type(region) == reg.EllipseRegion:
+            self.axes.add_patch(pa.Ellipse(
+                (region.centre[0] / self._x_axis_factor, region.centre[1] / self._y_axis_factor),
+                2 * region.radii[0] / self._x_axis_factor,
+                2 * region.radii[1] / self._y_axis_factor,
+                fill=False))
         else:
             raise TypeError('Unknown type in region list: {}'.format(type(region)))
 

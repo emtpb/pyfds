@@ -506,6 +506,37 @@ class Field2D(Field):
 
         return reg.TriRegion(inside_indices, position, name)
 
+    def get_ellipse_region(self, centre, radii, name=''):
+        """Create an elliptic region with the given parameters.
+
+        Args:
+            centre: Coordinates of the centre of the ellipse.
+            radii: Radii/half axes of the ellipse in x and y direction.
+            name: Name of the region.
+        """
+        if np.isscalar(radii):
+            radii = (radii, radii)
+
+        def inside(coordiantes):
+            """Check if given coordinates are inside the ellipse.
+
+            Returns:
+                True if inside, False if outside the ellipse.
+            """
+            return (centre[0] - coordiantes[0]) ** 2 / radii[0] ** 2 \
+                + (centre[1] - coordiantes[1]) ** 2 / radii[1] ** 2 <= 1
+
+        # Limit point index range so not all points on the grid have to be checked.
+        min_point_index = self.get_index((centre[0], centre[1] - radii[1]))
+        max_point_index = self.get_index((centre[0], centre[1] + radii[1]))
+
+        inside_indices = []
+        for ii in range(min_point_index, max_point_index):
+            if inside(self.get_position(ii)):
+                inside_indices.append(ii)
+
+        return reg.EllipseRegion(inside_indices, centre, radii, name)
+
 
 class Dimension:
     """Represents a space or time axis."""

@@ -81,6 +81,24 @@ class TriRegion(Region):
         self.tri_coordinates = coordinates
 
 
+class EllipseRegion(Region):
+    """Region specified by a elliptic field of points."""
+
+    def __init__(self, indices, centre, radii, name=''):
+        """Class constructor.
+
+        Args:
+            indices: Point indices of the region.
+            centre: Coordinates of the centre of the ellipse.
+            radii: Radii/half axes of the ellipse in x and y direction.
+            name: Name of the region.
+        """
+
+        super().__init__(indices, name)
+        self.centre = centre
+        self.radii = radii
+
+
 class Boundary:
     """Specifies values that are to be written to a FieldComponent after each simulation step
     (like excitation signals and fixed boundaries)."""
