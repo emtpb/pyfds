@@ -132,7 +132,7 @@ class Boundary:
         if np.ndim(self.value) == 0:
             # if a single value is given
             return self.additive * old_values + self.value
-        elif type(self.value) == np.ndarray:
+        elif isinstance(self.value, np.ndarray):
             # if a signal is given
             return self.additive * old_values + self.value[step]
         else:

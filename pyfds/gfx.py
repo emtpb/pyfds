@@ -26,7 +26,7 @@ class Animator:
 
         self.field = field
         self.field_components = {name: getattr(self.field, name) for name in dir(self.field)
-                                 if type(getattr(self.field, name)) == fld.FieldComponent}
+                                 if isinstance(getattr(self.field, name), fld.FieldComponent)}
         if observed_component:
             if observed_component in self.field_components.keys():
                 self.observed_component = observed_component
@@ -90,7 +90,7 @@ class Animator:
         """
 
         for name in dir(self.field):
-            if type(getattr(self.field, name)) == fld.FieldComponent:
+            if isinstance(getattr(self.field, name), fld.FieldComponent):
                 setattr(self.field, name, getattr(message, name))
 
     def _save_frame(self):
@@ -142,10 +142,10 @@ class Animator1D(Animator):
             region: Region to be plotted.
         """
 
-        if type(region) == reg.PointRegion:
+        if isinstance(region, reg.PointRegion):
             self.axes.plot(np.ones(2) * region.point_coordinates / self._x_axis_factor,
                            self.scale, color='black')
-        elif type(region) == reg.LineRegion:
+        elif isinstance(region, reg.LineRegion):
             self.axes.plot(np.ones(2) * region.line_coordinates[0] / self._x_axis_factor,
                            self.scale, color='black')
             self.axes.plot(np.ones(2) * region.line_coordinates[1] / self._x_axis_factor,
@@ -261,22 +261,22 @@ class Animator2D(Animator):
             region: Region to be plotted.
         """
 
-        if type(region) == reg.PointRegion:
+        if isinstance(region, reg.PointRegion):
             self.axes.scatter(region.point_coordinates[0] / self._x_axis_factor,
                               region.point_coordinates[1] / self._y_axis_factor, color='black')
-        elif type(region) == reg.LineRegion:
+        elif isinstance(region, reg.LineRegion):
             self.axes.plot([region.line_coordinates[0] / self._x_axis_factor,
                             region.line_coordinates[2] / self._x_axis_factor],
                            [region.line_coordinates[1] / self._y_axis_factor,
                             region.line_coordinates[3] / self._y_axis_factor],
                            color='black')
-        elif type(region) == reg.RectRegion:
+        elif isinstance(region, reg.RectRegion):
             self.axes.add_patch(pa.Rectangle((region.rect_coordinates[0] / self._x_axis_factor,
                                               region.rect_coordinates[1] / self._y_axis_factor),
                                              region.rect_coordinates[2] / self._x_axis_factor,
                                              region.rect_coordinates[3] / self._y_axis_factor,
                                              fill=False))
-        elif type(region) == reg.TriRegion:
+        elif isinstance(region, reg.TriRegion):
             self.axes.add_patch(pa.Polygon(
                 np.array([[region.tri_coordinates[0] / self._x_axis_factor,
                            region.tri_coordinates[1] / self._y_axis_factor],
@@ -285,7 +285,7 @@ class Animator2D(Animator):
                           [region.tri_coordinates[4] / self._x_axis_factor,
                            region.tri_coordinates[5] / self._y_axis_factor]]),
                 fill=False))
-        elif type(region) == reg.EllipseRegion:
+        elif isinstance(region, reg.EllipseRegion):
             self.axes.add_patch(pa.Ellipse(
                 (region.centre[0] / self._x_axis_factor, region.centre[1] / self._y_axis_factor),
                 2 * region.radii[0] / self._x_axis_factor,
