@@ -11,7 +11,7 @@ setup(
     description='Modular field simulation tool using finite differences.',
     long_description=long_description,
 
-    url='http://emt.uni-paderborn.de',
+    url='https://emt.uni-paderborn.de',
     author='Leander Claes',
     author_email='claes@emt.uni-paderborn.de',
     license='BSD',
