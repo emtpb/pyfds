@@ -597,7 +597,7 @@ class FieldComponent:
         """Applies the boundary conditions to the field component.
 
         Args:
-            step: Simulation step, required if boundary is a signal that changes of time.
+            step: Simulation step, required if boundary is a signal that changes over time.
         """
 
         for bound in self.boundaries:

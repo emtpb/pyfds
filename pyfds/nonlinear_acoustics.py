@@ -12,7 +12,7 @@ class IdealGas1D(fld.Field1D):
 
         Args:
             convective: Account for convective terms.
-            nl_adiabatic: Account for nonlinear equation of state.
+            nl_state: Account for nonlinear equation of state.
             See pyfds.fields.Field1D constructor arguments.
         """
 
