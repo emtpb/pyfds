@@ -77,7 +77,7 @@ htmlhelp_basename = '{0}doc'.format(project)
 # -- Options for LaTeX output
 
 latex_elements = {
-     'papersize': 'a4paper',
+    'papersize': 'a4paper',
 }
 latex_documents = [
     (master_doc, '{0}.tex'.format(project_without_spaces),
