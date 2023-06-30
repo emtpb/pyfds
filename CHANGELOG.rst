@@ -12,9 +12,22 @@ This project follows the guidelines of `Keep a changelog`_ and adheres to
 `Unreleased`_
 =============
 
+
+`0.2.0`_ - 2023-06-30
+=====================
+
 Added
 -----
 * Support for elliptic regions.
+
+Fixed
+-----
+* Code style and documentation issues.
+* Boundary test cases.
+
+Changed
+-------
+* From setup.py to pyproject.toml.
 
 
 `0.1.6`_ - 2023-03-30
@@ -106,6 +119,7 @@ Added
 
 
 .. _Unreleased: https://github.com/emtpb/pyfds
+.. _0.2.0: https://github.com/emtpb/pyfds/releases/tag/0.2.0
 .. _0.1.6: https://github.com/emtpb/pyfds/releases/tag/0.1.6
 .. _0.1.5: https://github.com/emtpb/pyfds/releases/tag/0.1.5
 .. _0.1.4: https://github.com/emtpb/pyfds/releases/tag/0.1.4
