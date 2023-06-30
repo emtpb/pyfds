@@ -22,9 +22,9 @@ def test_field_component_boundary_2():
     fc = fls.FieldComponent(100)
     fc.values = np.ones(100)
     fc.boundaries = [reg.Boundary(reg.LineRegion([5, 6, 7], [0, 0.2], 'test boundary'))]
-    fc.boundaries[0].value = [23, 42, 23]
+    fc.boundaries[0].value = [np.arange(0, 3) * 23, np.arange(0, 3) * 42, np.arange(0, 3) * 23]
     fc.boundaries[0].additive = True
-    fc.apply_bounds(step=0)
+    fc.apply_bounds(step=1)
     assert np.allclose(fc.values[[5, 6, 7]], [24, 43, 24])
 
 
