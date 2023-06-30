@@ -28,6 +28,16 @@ def test_field_component_boundary_2():
     assert np.allclose(fc.values[[5, 6, 7]], [24, 43, 24])
 
 
+def test_field_component_boundary_3():
+    fc = fls.FieldComponent(100)
+    fc.values = np.ones(100)
+    fc.boundaries = [reg.Boundary(reg.LineRegion([5, 6, 7], [0, 0.2], 'test boundary'))]
+    fc.boundaries[0].value = np.arange(0, 3) * 23
+    fc.boundaries[0].additive = True
+    fc.apply_bounds(step=2)
+    assert np.allclose(fc.values[[5, 6, 7]], [47, 47, 47])
+
+
 def test_field_component_output():
     fc = fls.FieldComponent(100)
     fc.outputs = [reg.Output(reg.LineRegion([0, 1, 2], [0, 0.2], 'test output'))]
