@@ -27,6 +27,7 @@ napoleon_use_rtype = True
 napoleon_use_admonition_for_examples = True
 napoleon_use_admonition_for_notes = True
 napoleon_use_admonition_for_references = True
+napoleon_custom_sections = [('Returns', 'params_style')]
 
 # Configure remote documenation via intersphinx
 intersphinx_mapping = {
