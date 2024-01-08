@@ -1,3 +1,4 @@
+import numpy as np
 import pyfds as fds
 import pytest as pt
 
@@ -24,3 +25,20 @@ def test_synchronized_fields():
     assert(acs.step == 1)
     assert(ths.step == 1)
     assert(cpl.step == 1)
+
+
+def test_boundary_coupling():
+    comp1 = fds.fields.FieldComponent(num_points=12)
+    comp1.values = 2 * np.ones(12)
+    comp2 = fds.fields.FieldComponent(num_points=12)
+    comp2.values = np.ones(12)
+    quad_coupling = fds.BoundaryCoupling(comp1, comp2, lambda x: x ** 2)
+    quad_coupling.apply(0)
+    assert(np.allclose(comp2.values, 5 * np.ones(12)))
+
+    accu_coupling = fds.BoundaryCoupling(comp1, comp2, lambda x: x, False, True, 3)
+    accu_coupling.apply(1)
+    accu_coupling.apply(2)
+    accu_coupling.apply(3)
+    accu_coupling.apply(4)
+    assert(np.allclose(comp2.values, 6 * np.ones(12)))

@@ -75,3 +75,56 @@ class SynchronizedFields(fld.Field):
             field.sim_step()
         for interaction in self.interactions:
             interaction.apply(self.step)
+
+
+class BoundaryCoupling():
+    """Class to couple the excitation or boundaries of one field to the field quantity of
+    another."""
+
+    def __init__(self, source_component, target_component, transfer_function,
+                 additive=True, accumulate=False, stepping=1):
+        """Class constructor.
+
+        Args:
+            source_component: Field component whose values are fed into the transfer function.
+            target_component: Field component that is modified by the output of transfer function.
+            transfer_function: Callable function that describes the interaction.
+            additive: Add output of transfer function to target component or set it directly.
+            accumulate: If stepping > 1, accumulate output of the transfer function when target
+                component is not modified.
+            stepping: Increase to apply coupling only each nth step.
+        """
+
+        self.source_component = source_component
+        self.target_component = target_component
+        self.transfer_function = transfer_function
+        self.additive = additive
+        self.accumulate = accumulate
+        self.stepping = stepping
+
+        self.accumulated_transfer = 0
+
+    def apply(self, step):
+        """Apply the interaction. Call at every simulation step.
+
+        Args:
+            step: Time step of the simulation.
+        """
+
+        if self.accumulate is True:
+            self.accumulated_transfer += self.transfer_function(self.source_component.values)
+
+        if step % self.stepping == 0:
+            if self.accumulate is False:
+                if self.additive is True:
+                    self.target_component.values += \
+                        self.transfer_function(self.source_component.values)
+                else:
+                    self.target_component.values = \
+                        self.transfer_function(self.source_component.values)
+            else:
+                if self.additive is True:
+                    self.target_component.values += self.accumulated_transfer
+                else:
+                    self.target_component.values = self.accumulated_transfer
+                self.accumulated_transfer = 0
