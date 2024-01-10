@@ -42,3 +42,43 @@ def test_boundary_coupling():
     accu_coupling.apply(3)
     accu_coupling.apply(4)
     assert(np.allclose(comp2.values, 6 * np.ones(12)))
+
+
+def test_material_coupling():
+    ths1 = fds.Thermal1D(t_delta=1, t_samples=1,
+                         x_delta=1, x_samples=3,
+                         material=fds.ThermalMaterial(1, 1, 1))
+    ths1.assemble_matrices()
+    assert(np.allclose(ths1.a_t_q.toarray(), np.array([[-1, 1, 0], [0, -1, 1], [0, 0, -1]])))
+    comp1 = fds.fields.FieldComponent(num_points=3)
+    comp1.values = np.ones(3)
+
+    coupling_step = fds.MaterialCoupling(comp1, ths1, 'density', lambda x: 1 + x ** 2, stepping=2)
+    assert(np.allclose(ths1.material_vector('density'), 2 * np.ones(3)))
+    assert(np.allclose(ths1.material_vector('thermal_conductivity_x'), np.ones(3)))
+    coupling_step.apply(0)
+    assert(np.allclose(ths1.a_t_q.toarray(), np.array([[-1, 1, 0], [0, -1, 1], [0, 0, -1]]) / 2))
+    comp1.values = 2 * np.ones(3)
+    coupling_step.apply(1)
+    # Values of a_t_q do not change because stepping is configured to every second step.
+    assert(np.allclose(ths1.a_t_q.toarray(), np.array([[-1, 1, 0], [0, -1, 1], [0, 0, -1]]) / 2))
+    coupling_step.apply(2)
+    # Values of a_t_q change.
+    assert(np.allclose(ths1.a_t_q.toarray(), np.array([[-1, 1, 0], [0, -1, 1], [0, 0, -1]]) / 5))
+
+    comp1.values = np.zeros(3)
+    ths2 = fds.Thermal1D(t_delta=1, t_samples=1,
+                         x_delta=1, x_samples=3,
+                         material=fds.ThermalMaterial(1, 1, 1))
+    coupling_threshold = fds.MaterialCoupling(comp1, ths2, 'density', lambda x: 1 + x ** 2,
+                                              rel_change_threshold=0.4)
+    coupling_threshold.apply(0)
+    assert(np.allclose(ths2.a_t_q.toarray(), np.array([[-1, 1, 0], [0, -1, 1], [0, 0, -1]])))
+    comp1.values = np.ones(3)
+    coupling_threshold.apply(1)
+    # Values of a_t_q change because change is above threshold.
+    assert(np.allclose(ths2.a_t_q.toarray(), np.array([[-1, 1, 0], [0, -1, 1], [0, 0, -1]]) / 2))
+    comp1.values = 1.5 * np.ones(3)
+    coupling_threshold.apply(2)
+    # Values of a_t_q do not change because change is below threshold.
+    assert(np.allclose(ths2.a_t_q.toarray(), np.array([[-1, 1, 0], [0, -1, 1], [0, 0, -1]]) / 2))

@@ -5,4 +5,4 @@ from .thermal import Thermal1D, Thermal2D, Thermal3DAxi, ThermalMaterial
 from .electrostatics import Electrostatic1D, Electrostatic2D, ElectrostaticMaterial
 from .acoustic_flow import AcousticFlow2D
 from .gfx import Animator1D, Animator2D
-from .coupling import SynchronizedFields, BoundaryCoupling
+from .coupling import SynchronizedFields, BoundaryCoupling, MaterialCoupling
