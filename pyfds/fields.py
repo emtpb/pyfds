@@ -1,7 +1,6 @@
 import logging as lo
 import numpy as np
 import scipy.sparse as sp
-import warnings as wn
 from . import regions as reg
 
 logger = lo.getLogger('pyfds')
@@ -53,11 +52,7 @@ class Field:
                     param_found = True
 
         if not param_found:
-            wn.warn('Material parameter {} not found in set materials. Returning zeros.'
-                    .format(mat_parameter), stacklevel=2)
-            logger.warning(
-                'Material parameter {} not found in set materials. Returning zeros.'
-                .format(mat_parameter))
+            raise KeyError('Material parameter {} not found in set materials.')
 
         return mat_vector
 

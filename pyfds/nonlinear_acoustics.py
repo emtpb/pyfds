@@ -1,5 +1,4 @@
 import numpy as np
-import warnings as wn
 from . import fields as fld
 from . import acoustics as ac
 
@@ -110,8 +109,8 @@ class Acoustic2ndOrder1D(fld.Field1D):
 
         if not (hasattr(kwargs['material'], 'd_rho_p')
                 and hasattr(kwargs['material'], 'd_rho2_p')):
-            wn.warn('Material with properties d_rho_p and d_rho2_p is required for 2nd order '
-                    'nonlinear acoustic simulation.')
+            raise RuntimeError('Material with properties d_rho_p and d_rho2_p is required for '
+                               '2nd order nonlinear acoustic simulation.')
         super().__init__(*args, **kwargs)
 
         self.pressure = fld.FieldComponent(self.num_points)
