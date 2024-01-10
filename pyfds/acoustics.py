@@ -1,6 +1,10 @@
 import numpy as np
 from . import fields as fld
 
+__all__ = [
+    'Acoustic1D', 'Acoustic2D', 'Acoustic3DAxi', 'AcousticMaterial',
+]
+
 
 class Acoustic1D(fld.Field1D):
     """Class for simulation of one-dimensional acoustic fields."""

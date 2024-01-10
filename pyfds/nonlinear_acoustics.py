@@ -2,6 +2,10 @@ import numpy as np
 from . import fields as fld
 from . import acoustics as ac
 
+__all__ = [
+    'IdealGas1D', 'Acoustic2ndOrder1D', 'AcousticMaterial2ndOrder',
+]
+
 
 class IdealGas1D(fld.Field1D):
     """Class for simulation of one-dimensional nonlinear acoustic fields in ideal gases."""

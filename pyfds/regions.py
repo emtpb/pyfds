@@ -1,5 +1,9 @@
 import numpy as np
 
+__all__ = [
+    'Boundary', 'MaterialRegion', 'Output',
+]
+
 
 class Region:
     """Storage for the indices of points and metadata for which specific behaviour is to be

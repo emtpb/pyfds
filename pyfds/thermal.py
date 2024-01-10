@@ -2,6 +2,10 @@ import logging as lo
 import numpy as np
 from . import fields as fld
 
+__all__ = [
+    'Thermal1D', 'Thermal2D', 'Thermal3DAxi', 'ThermalMaterial'
+]
+
 logger = lo.getLogger('pyfds')
 
 

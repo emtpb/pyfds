@@ -3,6 +3,10 @@ import numpy as np
 import warnings as wn
 from . import acoustics as acs
 
+__all__ = [
+    'AcousticFlow2D',
+]
+
 logger = lo.getLogger('pyfds')
 
 

@@ -6,6 +6,10 @@ import os
 from . import fields as fld
 from . import regions as reg
 
+__all__ = [
+    'Animator1D', 'Animator2D',
+]
+
 
 class Animator:
     """Base class for pyfds' live field animation during simulation."""

@@ -4,6 +4,10 @@ import scipy.sparse as sp
 import scipy.sparse.linalg as sl
 from . import fields as fld
 
+__all__ = [
+    'Electrostatic1D', 'Electrostatic2D', 'ElectrostaticMaterial',
+]
+
 logger = lo.getLogger('pyfds')
 
 

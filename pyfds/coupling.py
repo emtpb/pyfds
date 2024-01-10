@@ -2,6 +2,10 @@ import logging as lo
 
 from . import fields as fld
 
+__all__ = [
+    'SynchronizedFields', 'BoundaryCoupling', 'MaterialCoupling',
+]
+
 logger = lo.getLogger('pyfds')
 
 
