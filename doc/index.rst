@@ -26,6 +26,7 @@ API
     nonlinear_acoustics
     thermal
     electrostatics
+    coupling
     gfx
 
 Indices and tables

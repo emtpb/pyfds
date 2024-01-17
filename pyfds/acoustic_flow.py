@@ -22,7 +22,7 @@ class AcousticFlow2D(acs.Acoustic2D):
 
         Args:
             flow: Flow velocity in x direction (scalar or vector with length of y_samples).
-            *args, **kwargs: See pyfds.fields.Field2D constructor arguments.
+            *args, \\**kwargs: See pyfds.fields.Field2D constructor arguments.
         """
         super().__init__(*args, **kwargs)
 
