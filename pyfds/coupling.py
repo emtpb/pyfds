@@ -175,25 +175,24 @@ class MaterialCoupling():
         """Replace the material_vector method of the target field with a method that accounts for
         the influence of the source field."""
         self.target_field.static_material_vector = self.target_field.material_vector
+        self.target_field.material_vector = self._material_vector
 
-        def material_vector(mat_parameter):
-            """Get a vector that contains the specified material parameter for every point of the
-            field and multiply by the transfer function if the parameter is coupled to the source
-            field.
+    def _material_vector(self, mat_parameter):
+        """Get a vector that contains the specified material parameter for every point of the
+        field and multiply by the transfer function if the parameter is coupled to the source
+        field.
 
-            Args:
-                mat_parameter: Material parameter of interest.
+        Args:
+            mat_parameter: Material parameter of interest.
 
-            Returns:
-                Vector which contains the specified material parameter for each point in the field.
-            """
-            if mat_parameter == self.target_parameter:
-                return self.target_field.static_material_vector(mat_parameter) \
-                    * self.transfer_function(self.source_component.values)
-            else:
-                return self.target_field.static_material_vector(mat_parameter)
-
-        self.target_field.material_vector = material_vector
+        Returns:
+            Vector which contains the specified material parameter for each point in the field.
+        """
+        if mat_parameter == self.target_parameter:
+            return self.target_field.static_material_vector(mat_parameter) \
+                * self.transfer_function(self.source_component.values)
+        else:
+            return self.target_field.static_material_vector(mat_parameter)
 
     def apply(self, step):
         """Apply the interaction. Call at every simulation step.
