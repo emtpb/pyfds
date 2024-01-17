@@ -3,7 +3,7 @@ import logging as lo
 from . import fields as fld
 
 __all__ = [
-    'SynchronizedFields', 'BoundaryCoupling', 'MaterialCoupling',
+    'SynchronizedFields', 'BoundaryCoupling', 'MaterialCoupling', 'MaterialCouplingPowerLaw',
 ]
 
 logger = lo.getLogger('pyfds')
@@ -211,3 +211,44 @@ class MaterialCoupling():
                 if self.rel_change_threshold is not None:
                     logger.info(f"Relative change in parameters is {rel_change}.")
                     logger.info(f"Matrices reassembled in step {step}.")
+
+
+class MaterialCouplingPowerLaw(MaterialCoupling):
+    """Class to couple the material parameters of one field to a field quantity q of another using
+    a power law: p * (1 + factor * q ^ power)."""
+
+    def __init__(self, source_component, target_field, target_parameter, power, factor,
+                 rel_change_threshold=None, stepping=1):
+        """Class constructor.
+
+        Args:
+            source_component: Field component whose values are fed into the transfer function.
+            target_field: Field with material to be modified.
+            target_parameter: Name of parameter modified by the output of transfer function.
+            power: Exponent of the power law.
+            factor: Factor of the power expression.
+            rel_change_threshold: Relative change threshold for parameters changes to be applied.
+            stepping: Increase to apply coupling only each nth step.
+        """
+
+        self.power = power
+        self.factor = factor
+        super().__init__(
+            source_component=source_component,
+            target_field=target_field,
+            target_parameter=target_parameter,
+            transfer_function=self.transfer_function,
+            rel_change_threshold=rel_change_threshold,
+            stepping=stepping
+        )
+
+    def transfer_function(self, values):
+        """Power law used as a transfer function.
+
+        Args:
+            values: Values of the source field component.
+
+        Returns:
+            Factors the material parameters are multiplied with.
+        """
+        return 1 + self.factor * values ** self.power
