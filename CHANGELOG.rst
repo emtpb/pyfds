@@ -13,6 +13,19 @@ This project follows the guidelines of `Keep a changelog`_ and adheres to
 =============
 
 
+`0.3.0`_ - 2024-04-03
+=====================
+
+Added
+-----
+* Generic API for simulation of coupled fields using boundary conditions and dependent material parameters.
+* One-dimensional thermo-acoustic simulation.
+
+Changed
+-------
+* Internal import structure.
+
+
 `0.2.0`_ - 2023-06-30
 =====================
 
@@ -119,6 +132,7 @@ Added
 
 
 .. _Unreleased: https://github.com/emtpb/pyfds
+.. _0.3.0: https://github.com/emtpb/pyfds/releases/tag/0.3.0
 .. _0.2.0: https://github.com/emtpb/pyfds/releases/tag/0.2.0
 .. _0.1.6: https://github.com/emtpb/pyfds/releases/tag/0.1.6
 .. _0.1.5: https://github.com/emtpb/pyfds/releases/tag/0.1.5
