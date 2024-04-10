@@ -13,6 +13,14 @@ This project follows the guidelines of `Keep a changelog`_ and adheres to
 =============
 
 
+`0.3.1`_ - 2024-04-10
+=====================
+
+Added
+-----
+* Material parameter coupling with exponential expression.
+
+
 `0.3.0`_ - 2024-04-03
 =====================
 
@@ -132,6 +140,7 @@ Added
 
 
 .. _Unreleased: https://github.com/emtpb/pyfds
+.. _0.3.1: https://github.com/emtpb/pyfds/releases/tag/0.3.1
 .. _0.3.0: https://github.com/emtpb/pyfds/releases/tag/0.3.0
 .. _0.2.0: https://github.com/emtpb/pyfds/releases/tag/0.2.0
 .. _0.1.6: https://github.com/emtpb/pyfds/releases/tag/0.1.6

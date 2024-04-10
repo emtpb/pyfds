@@ -1,9 +1,11 @@
 import logging as lo
+import numpy as np
 
 from . import fields as fld
 
 __all__ = [
-    'SynchronizedFields', 'BoundaryCoupling', 'MaterialCoupling', 'MaterialCouplingPowerLaw',
+    'SynchronizedFields', 'BoundaryCoupling', 'MaterialCoupling', 'MaterialCouplingExponential',
+    'MaterialCouplingPowerLaw',
 ]
 
 logger = lo.getLogger('pyfds')
@@ -211,6 +213,50 @@ class MaterialCoupling():
                 if self.rel_change_threshold is not None:
                     logger.info(f"Relative change in parameters is {rel_change}.")
                     logger.info(f"Matrices reassembled in step {step}.")
+
+
+class MaterialCouplingExponential(MaterialCoupling):
+    """Class to couple the material parameters of one field to a field quantity q of another using
+    an exponential expression: p * (a + (1 - a) * exp(b * q))). The expression will always yield p
+    for q = 0. The expression will converge to p * a for negative values of b and for large
+    positive values of q as well as for positive values of b and large negative values of q."""
+
+    def __init__(self, source_component, target_field, target_parameter, a, b,
+                 rel_change_threshold=None, stepping=1):
+        """Class constructor.
+
+        Args:
+            source_component: Field component whose values are fed into the transfer function.
+            target_field: Field with material to be modified.
+            target_parameter: Name of parameter modified by the output of transfer function.
+            a: Parameter of the exponential expression. Relative limit for bounded half
+                of the expression.
+            b: Parameter in the exponent of the exponential expression.
+            rel_change_threshold: Relative change threshold for parameters changes to be applied.
+            stepping: Increase to apply coupling only each nth step.
+        """
+
+        self.a = a
+        self.b = b
+        super().__init__(
+            source_component=source_component,
+            target_field=target_field,
+            target_parameter=target_parameter,
+            transfer_function=self.transfer_function,
+            rel_change_threshold=rel_change_threshold,
+            stepping=stepping
+        )
+
+    def transfer_function(self, values):
+        """Exponential expression used as a transfer function.
+
+        Args:
+            values: Values of the source field component.
+
+        Returns:
+            Factors the material parameters are multiplied with.
+        """
+        return self.a + (1 - self.a) * np.exp(self.b * values)
 
 
 class MaterialCouplingPowerLaw(MaterialCoupling):
